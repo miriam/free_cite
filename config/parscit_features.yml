@@ -1,0 +1,27 @@
+# This feature file contains the original features from parsCit, in their
+# original order
+# use this ordering to use the original parsCit model template
+feature_order:
+ - 'last_char'        # 1
+ - 'first_1_char'     # 2 
+ - 'first_2_chars'    # 3
+ - 'first_3_chars'    # 4 
+ - 'first_4_chars'    # 5
+ - 'last_1_char'      # 6
+ - 'last_2_chars'     # 7
+ - 'last_3_chars'     # 8
+ - 'last_4_chars'     # 9
+ - 'toklcnp'          # 10
+ - 'capitalization'   # 11
+ - 'numbers'          # 12
+ - 'a_is_in_dict'     # 13
+ - 'maleName'         # 14
+ - 'femaleName'       # 15
+ - 'lastName'         # 16
+ - 'monthName'        # 17
+ - 'placeName'        # 18
+ - 'publisherName'    # 19
+ - 'possible_editor'  # 20
+ - 'location'         # 21
+ - 'punct'            # 22
+
