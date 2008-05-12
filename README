@@ -22,6 +22,29 @@ $ ./configure && make && sudo make install
   
   $ rake crfparser:train_model
 
+  
+To Use:
+
+  - Currently the web service has one API call: create. 
+    Create takes a reference string, parses the string, uses the data to
+    create a Citation instance and returns the xml-serialized Citation.
+    Here is an example use-case in Ruby:
+
+require 'net/http'
+
+Net::HTTP.start('localhost', 3000) do |http|
+  response = http.post('/citations/create',
+    'citation=A. Bookstein and S. T. Klein,   Detecting content-bearing words by serial clustering,   Proceedings of the Nineteenth Annual International ACM SIGIR Conference on Research and Development in Information Retrieval,   pp. 319327,   1995.',
+    'Accept' => 'text/xml')
+
+  #Do something with the response.
+
+  puts "Code: #{response.code}"
+  puts "Message: #{response.message}"
+  puts "Body:\n #{response.body}"
+end
+
+
 == Welcome to Rails
 
 Rails is a web-application and persistence framework that includes everything
