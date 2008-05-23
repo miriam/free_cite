@@ -1,35 +1,38 @@
-To Install:
+# Install instructions from a SuSE 10.1 development environment
 
-- GET THE CRF TOOLKIT:
-download from: http://www.chasen.org/~taku/software/CRF++/
-CRF toolkit Version 0.47
+== Install required packages ==
 
-$ wget http://superb-west.dl.sourceforge.net/sourceforge/crfpp/CRF++-0.47.tar.gz
-$ tar xvzf CRF++-0.47.tar.gz
-$ cd CRF++-0.47
-$ ./configure && make && sudo make install
-# by default, this will install the executables to /usr/local/bin,
-#   so make sure that directory is in your path.
-# install the ruby bindings thusly:
-  $ cd CRF++-0.47/ruby
-  # follow the directions in the README there:
+> wget http://superb-west.dl.sourceforge.net/sourceforge/crfpp/CRF++-0.47.tar.gz
+> tar xvzf CRF++-0.47.tar.gz
+> cd CRF++-0.47
+> ./configure && make && sudo make install
+> cd CRF++-0.47/ruby
+> ruby extconf.rb
+> make
+> sudo make install
 
-     $ ruby extconf.rb
-     $ make
-     $ sudo make install
 
-- TRAIN THE MODEL
+== Train the model == 
   
-  $ rake crfparser:train_model
+> rake crfparser:train_model
 
+# Usage guide
   
-To Use:
 
-  - Currently the web service has one API call: create. 
-    Create takes a reference string, parses the string, uses the data to
-    create a Citation instance and returns the xml-serialized Citation.
-    Here is an example use-case in Ruby:
+== Using the API ==
 
+http://0.0.0.0:3000/citations/create
+ * (required argument) citation or citation[] - a citation or array of 
+   citations to parse
+ * Accept: text/xml or text/html
+
+If accepting xml, returns the parsed citation string and resulting context 
+object in xml format. 
+If accepting html returns the parsed citation string as spans.
+
+examples:
+
+# in ruby:
 require 'net/http'
 
 Net::HTTP.start('localhost', 3000) do |http|
@@ -37,12 +40,19 @@ Net::HTTP.start('localhost', 3000) do |http|
     'citation=A. Bookstein and S. T. Klein,   Detecting content-bearing words by serial clustering,   Proceedings of the Nineteenth Annual International ACM SIGIR Conference on Research and Development in Information Retrieval,   pp. 319327,   1995.',
     'Accept' => 'text/xml')
 
-  #Do something with the response.
-
   puts "Code: #{response.code}"
   puts "Message: #{response.message}"
   puts "Body:\n #{response.body}"
 end
+
+# with curl
+curl -H 'Accept: text/xml' -d "citation[]=Fielderman, A., Silvester, G., Gatsonis, C.A., Hoenig, J., Flynn, S. Prognostic significance of flow cytometric DNA analysis and proliferative index in stage I non-small cell lung cancer. American Review of Respiratory Disease, 1992; 146:707-710.&citation[]=Udvarhelyi, I.S., Gatsonis, C.A., Epstein, A.M., Pashos, C.L., Newhouse, J.P. and McNeil, B.J. Acute Myocardial Infarction in the Medicare population: process of care and clinical outcomes. Journal of the American Medical Association, 1992; 18:2530-2536.  " http://0.0.0.0:3000/citations/create
+
+== Using the Web App ==
+http://0.0.0.0:3000/citations/create
+
+Enter a citation, or a list of citations separated by newlines.
+Should be self-explanitory.
 
 
 == Welcome to Rails
