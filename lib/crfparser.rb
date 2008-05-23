@@ -50,6 +50,7 @@ class CRFParser
       (ret[t] ||= '') << toks[i]
     }
     normalize_fields(ret)
+    ret['raw_string'] = str
     ret
   end
 
@@ -100,16 +101,21 @@ class CRFParser
     tag = nil
     self.clear
     tokens = tokens_and_tags.reject {|t| t =~ /^<[\/]{0,1}([a-z]+)>$/}
+
+    # if this is a testing run, disregard anything that looks like a tag
+    tokens = tokens_and_tags unless training
     toki = 0
     tokens_and_tags.each_with_index {|tok, i|
       # if this is training data, grab the mark-up tag and then skip it
-      if tok =~ /^<([a-z]+)>$/ 
-        tag = $1
-        next
-      elsif tok =~ /^<\/([a-z]+)>$/ 
-        tok = nil
-        raise TrainingError, "Mark-up tag mismatch #{tag} != #{$1}" if $1 != tag
-        next
+      if training
+        if tok =~ /^<([a-z]+)>$/ 
+          tag = $1
+          next
+        elsif tok =~ /^<\/([a-z]+)>$/ 
+          tok = nil
+          raise TrainingError, "Mark-up tag mismatch #{tag} != #{$1}" if $1 != tag
+          next
+        end
       end
       feats = {}
 
