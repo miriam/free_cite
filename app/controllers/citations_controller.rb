@@ -1,7 +1,9 @@
+require 'citation'
+
 class CitationsController < ApplicationController
   def index
     list
-    render :action => 'list'
+    render :action => 'parse_string'
   end
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
@@ -9,15 +11,7 @@ class CitationsController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    @citations = Citations.find_all
-  end
-
-  def show
-    @citation = Citation.find(params[:id])
-  end
-
-  def new
-    @citation = Citation.new
+    @citations = Citation.find_all
   end
 
   def create
@@ -26,36 +20,55 @@ class CitationsController < ApplicationController
       return
     end
 
-    @citation = Citation.create_from_string(params[:citation])
+    if params["commit"]
+      cstrs = params[:citation][:string].split(/\n+/).compact
+    else
+      cstrs = listify(params[:citation])
+    end
 
-    if @citation.save
+    @citations = []
+
+    status = true
+    cstrs.each {|cstr|
+      citation = Citation.create_from_string(cstr)
+      status &= citation.save
+      @citations << citation
+    }
+
+    if status
       respond_to do |wants|
-         wants.html
+        wants.html {
+          if @citations.empty?
+            redirect_to :action => 'parse_string'
+          else
+            redirect_to :action => 'show', :citations => @citations
+          end
+         }
          wants.js 
-         wants.xml { render :xml => @citation.to_xml }
-      end 
-    else 
-      render :text => "Error creating citation",
+         wants.xml { 
+           render :xml => 
+             "<citations>\n" << citations2xml(@citations) << "</citations>\n",
+           :status => :ok
+         }
+      end
+    else
+      render :text => "Error creating citations: #{cstrs.join("\n")}",
              :status => :internal_server_error
     end
   end
 
-  def edit
-    @citation = Citation.find(params[:id])
+  def show
+    @citations = params[:citations].map {|c| Citation.find c.to_i}
   end
 
-  def update
-    @citation = Citation.find(params[:id])
-    if @citation.update_attributes(params[:citation])
-      flash[:notice] = 'Citation was successfully updated.'
-      redirect_to :action => 'show', :id => @citation
-    else
-      render :action => 'edit'
-    end
+  private
+  def listify(es)
+    es ||= []
+    es = [es] unless Array === es
+    return es
   end
-
-  def destroy
-    Citation.find(params[:id]).destroy
-    redirect_to :action => 'list'
+  def citations2xml(citations)
+    citations.map{|c| "#{c.to_xml}\n#{c.context_object.xml}"}.join("\n")
   end
 end
+

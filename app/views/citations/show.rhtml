@@ -1,0 +1,25 @@
+<%= stylesheet_link_tag "citation" %>
+<% @citations.each {|c| %>
+  <%= c.to_spans %>
+  <hr>
+<% } %>
+
+<br>
+Key: 
+<span title="authors" class="authors">Authors</span>
+<span title="title" class="title">Title</span>
+<span title="journal" class="journal">Journal</span>
+<span title="booktitle" class="booktitle">Booktitle</span>
+<span title="editor" class="editor">Editor</span>
+<span title="volume" class="volume">Volume</span>
+<span title="publisher" class="publisher">Publisher</span>
+<span title="institution" class="institution">Institution</span>
+<span title="location" class="location">Location</span>
+<span title="number" class="number">Number</span>
+<span title="pages" class="pages">Pages</span>
+<span title="year" class="year">Year</span>
+<span title="tech" class="tech">Tech</span>
+<span title="note" class="note">Note</span>
+<br>
+<span class="raw_string">Original citation string</span>
+

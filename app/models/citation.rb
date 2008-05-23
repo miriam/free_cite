@@ -1,5 +1,8 @@
 require 'crfparser'
 require 'string_helpers'
+require 'openurl'
+require 'postprocessor'
+require 'citation_to_context_object'
 
 class Citation < ActiveRecord::Base
 
@@ -13,7 +16,23 @@ class Citation < ActiveRecord::Base
     return false
   end
 
-  def to_xml
+  def context_object
+    @context_object ||= CitationToContextObject.to_context_obj(self)
+  end
+
+  def to_spans
+    txt = to_xml
+    txt.gsub!(/<([^\/>]*)( [^>]*)?>/, '<span class="\1" title="\1">')
+    txt.gsub!(/<\/.*>/, '</span>')
+    txt.sub!(/<span class="raw_string"/, '<br><span class="raw_string"')
+    txt
+  end
+
+  def to_context_object
+    return citation_to_context_obj(self)
+  end
+
+  def to_xml(opt=nil)
     xml = "<citation valid=#{valid_citation?}>\n"
     if !authors.empty?
       xml << "<authors>\n"
@@ -21,8 +40,8 @@ class Citation < ActiveRecord::Base
       xml << "</authors>\n"
     end
 
-    %w(title year journal booktitle tech volume pages editor
-       publisher institution location note).each {|heading|
+    %w(title journal booktitle editor volume publisher institution location 
+       number pages year tech note ).each {|heading|
 
       if value = self.attributes[heading]
         xml << "<#{heading}>#{value.to_s.xml_escape}</#{heading}>\n"
@@ -43,23 +62,22 @@ class Citation < ActiveRecord::Base
       xml << "<raw_string>#{raw_string.xml_escape}</raw_string>\n"
     end
     xml << "</citation>\n"
-
     xml
+  end
 
+  def self.create_from_hash(hsh)
+    hsh.keys.reject {|k| Citation.column_names.include?(k)}.each {|k|
+      hsh.delete k
+    }
+    Citation.create(hsh)
+  rescue Exception => e
+    raise "Could not create citation from string: #{str}\nFailed with error: #{e}\n#{e.backtrace.join("\n")}"
   end
 
   def self.create_from_string(str)
     cp = CRFParser.new
-    begin
-      hsh = cp.parse_string(str)
-      hsh.keys.reject {|k| Citation.column_names.include?(k)}.each {|k|
-        hsh.delete k
-      }
-      puts hsh.keys.join("\n")
-      Citation.create(hsh)
-    rescue Exception => e
-      raise "Could not create citation from string: #{str}\nFailed with error: #{e}\n#{e.backtrace.join("\n")}"
-    end
+    hsh = cp.parse_string(str)
+    Citation.create_from_hash(hsh)
   end
 
 end
