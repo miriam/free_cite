@@ -1,4 +1,4 @@
-.authors     {background-color: #FFFFCC !important;}
+.author     {background-color: #FFFFCC !important; outline: yellow solid thin}
 .title       {font-style: italic !important;}
 .year        {font-weight: bold !important;}
 .journal     {text-decoration: underline !important;}

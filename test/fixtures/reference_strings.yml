@@ -1,5 +1,45 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-first:
-  id: 1
-another:
-  id: 2
+journal_stitle:
+  author: W. H. Enright. 
+  author_n: 
+    - W H Enright
+  title: Improving the efficiency of matrix operations in the numerical solution of stiff ordinary differential equations. 
+  title_n: Improving the efficiency of matrix operations in the numerical solution of stiff ordinary differential equations
+  journal: ACM Trans. Math. Softw.,  
+  journal_n: ACM Trans. Math. Softw.,  
+  volume: 4(2) 
+  volume_n: 4
+  number: 2
+  pages: 127-136,  
+  pages_n: 127--136
+  date: June 1978. 
+  year: 1978
+journal_jtitle:
+  author: "Angrist, J., Imbens, G., & Rubin, D." 
+  date: (1995). 
+  title: Identification of causal effects using instrumental variables. 
+  journal: Journal of the American Statistical Association, 
+  note: in press. 
+patent:
+  author: Raab, F. H.,  
+  title: "\"Remote object position locator\"." 
+  tech: US patent 4 0054 881 
+  date: October 18, 1977. 
+dissertation:
+  author: Catlett, J. 
+  date: (1991b).  
+  title: "\"Megainduction: Machine Learning on Very Large Databases. \"" 
+  tech:  Ph.D. thesis,  
+  institution: Basser Department of Computer Science, University of Sydney. 
+book:
+  author: A. Bookstein and S. T. Klein, 
+  title: Detecting content-bearing words by serial clustering, 
+  booktitle: "Proceedings of the Nineteenth Annual International ACM SIGIR Conference on Research and Development in Information Retrieval, " 
+  pages: pp. 319327, 
+  date: 1995. 
+preprint:
+  author: J. Hafner and K. McCurley. 
+  title: "\"On the distribution of running times of certain integer factoring algorithms,\"" 
+  tech: preprint  
+  date: (1987). 
+
