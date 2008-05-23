@@ -13,11 +13,11 @@
 
 
 == Train the model == 
+
+A trained model is checked in to the repo, so this step is not necessary 
+unless you are making local changes. 
   
 > rake crfparser:train_model
-
-# Usage guide
-  
 
 == Using the API ==
 
