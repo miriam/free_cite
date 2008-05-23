@@ -1,0 +1,17 @@
+.authors     {background-color: #FFFFCC !important;}
+.title       {font-style: italic !important;}
+.year        {font-weight: bold !important;}
+.journal     {text-decoration: underline !important;}
+.booktitle   {text-decoration: underline !important;}
+.tech        {background-color: #FFCC99 !important;}
+.volume      {background-color: #FF99CC !important;}
+.number      {background-color: #CC99CC !important;}
+.pages       {background-color: #CC99FF !important;}
+.editor      {background-color: #CCCCFF !important;}
+.publisher   {background-color: #99CCFF !important;}
+.institution {background-color: #CCFFFF !important;}
+.location    {background-color: #99FFCC !important;}
+.note        {background-color: #33FF99 !important;}
+.raw_string  {background-color: #CCCCCC !important;}
+
+
