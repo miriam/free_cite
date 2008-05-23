@@ -6,6 +6,8 @@ module Postprocessor
   end
 
   def method_missing(m, args)
+    # Call normalize on any fields that don't have their own normalization
+    # method defined
     if m.to_s =~ /^normalize/
       m.to_s =~ /normalize_(.*)$/
       normalize($1, args) 
@@ -61,7 +63,7 @@ module Postprocessor
     }
     if !current_auth.empty?
       auth = normalize_author_name(current_auth)
-      authors << auth
+      authors << auth unless auth.strip == "-"
     end
     hsh['authors'] = authors
     hsh
@@ -80,10 +82,20 @@ module Postprocessor
       end  
     end  
     hsh['date'] = ret
+    return hsh
   end
 
   def normalize_volume(hsh)
-    normalize_number(hsh)
+    # If there are two numbers, they are volume and number.
+    # e.g. "23(2)", "Vol. 23, No. 3" etc...
+    if hsh['volume'] =~ /\D*(\d+)\D+(\d+)/i
+      hsh['volume'] = $1
+      hsh['number'] = $2
+    # Otherwise, just pull out a number and hope that it's the volume
+    elsif hsh['volume'] =~ /(\d+)/
+      hsh['volume'] = $1
+    end
+    return hsh
   end
 
   ##
@@ -98,7 +110,7 @@ module Postprocessor
         when  /(\d+)/
           $1
         else
-          str
+          hsh['pages']
       end 
     hsh
   end
@@ -123,13 +135,14 @@ module Postprocessor
 
     orig_tokens = author_text.split(/\s+/)
     tokens = []
+    last = false
     orig_tokens.each_with_index {|tok, i|
       if tok !~ /[A-Za-z&]/
         if i < orig_tokens.length/2
           tokens = []
           next
         else
-          last
+          last = true
         end
       end
       if (tok =~ /^(jr|sr|ph\.?d|m\.?d|esq)\.?\,?$/i and
@@ -139,6 +152,7 @@ module Postprocessor
         next  
       end
       tokens << tok
+      break if last
     }
     tokens
   end # repair_and_tokenize_author_text
@@ -173,14 +187,6 @@ module Postprocessor
       str = new_order.join(" ")
     end
     return str
-  end
-
-  def normalize_number(str)
-    if str =~ /(\d+)/
-      return $1
-    else
-      return str
-    end  
   end
 
 end
