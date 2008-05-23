@@ -101,10 +101,12 @@ module OpenURL
       kevs = []
       
       @metadata.each do |k,v|
-        kevs << "#{@abbr}.#{k}="+CGI.escape(v) if v                      
+        (Array === v ? v : [v]).each {|val|
+          kevs << "#{@abbr}.#{k}="+CGI.escape(val) if val
+        }
       end
       
-      kevs << "#{@abbr}_val_fmt="+CGI.escape("info:ofi/fmt:xml:xsd:#{@format}") if @format                  
+      kevs << "#{@abbr}_val_fmt="+CGI.escape("info:ofi/fmt:kev:xsd:#{@format}") if @format                  
 
       if @reference["format"] 
         kevs << "#{@abbr}_ref_fmt="+CGI.escape(@reference["format"])
