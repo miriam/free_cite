@@ -11,12 +11,30 @@
 > make
 > sudo make install
 
+== Configure Postgres ==
+
+# as postgres
+
+initdb
+pg_ctl -D /var/lib/pgsql/data -l logfile start
+/sbin/chkconfig postgresql on
+
+# create user, answer no to all questions
+createuser citeparse
+psql
+ALTER USER citeparse PASSWORD 'c1t3p4rs3r';
+CREATE DATABASE citeparse_development;
+CREATE DATABASE citeparse_production;
+CREATE DATABASE citeparse_test;
+GRANT ALL ON DATABASE "citeparse_development" TO citeparse;
+GRANT ALL ON DATABASE "citeparse_production" TO citeparse;
+GRANT ALL ON DATABASE "citeparse_test" TO citeparse;
+\q
 
 == Train the model == 
 
-A trained model is checked in to the repo, so this step is not necessary 
-unless you are making local changes. 
-  
+# A trained model is checked in to the repo, so this step is not necessary 
+# unless you are making local changes. 
 > rake crfparser:train_model
 
 == Using the API ==
