@@ -1,6 +1,10 @@
 <%= stylesheet_link_tag "citation" %>
 <% @citations.each {|c| %>
   <%= c.to_spans %>
+  <br>
+  <%= # FIXME: quick hack to show the context_object.
+  %>
+  <code> <%= html_escape(c.context_object.xml) %> </code>
   <hr>
 <% } %>
 
@@ -22,4 +26,6 @@ Key:
 <span title="note" class="note">Note</span>
 <br>
 <span class="raw_string">Original citation string</span>
+<br>
+<code>ContextObject</code>
 
