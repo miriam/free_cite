@@ -1,3 +1,29 @@
+# == Schema Information
+# Schema version: 1
+#
+# Table name: citations
+#
+#  id          :integer       not null, primary key
+#  raw_string  :text
+#  authors     :text          default(--- [])
+#  title       :text
+#  year        :integer
+#  publisher   :text
+#  location    :text
+#  booktitle   :text
+#  journal     :text
+#  pages       :text
+#  volume      :text
+#  number      :text
+#  contexts    :text          default(--- [])
+#  tech        :text
+#  institution :text
+#  editor      :text
+#  note        :text
+#  marker_type :string(255)
+#  marker      :string(255)
+#
+
 require 'crfparser'
 require 'string_helpers'
 require 'openurl'
