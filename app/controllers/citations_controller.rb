@@ -58,7 +58,11 @@ class CitationsController < ApplicationController
   end
 
   def show
-    @citations = params[:citations].map {|c| Citation.find c.to_i}
+    if params[:citations]
+      @citations = params[:citations].map {|c| Citation.find c.to_i}
+    else
+      @citations = Citation.find :all
+    end
   end
 
   private
