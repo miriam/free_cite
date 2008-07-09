@@ -11,7 +11,7 @@ class CitationsController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    @citations = Citation.find_all
+    @citations = Citation.find :all
   end
 
   def create

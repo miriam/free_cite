@@ -1,4 +1,5 @@
 require 'postprocessor'
+require 'token_features'
 require 'CRFPP'
 require 'tempfile'
 

@@ -2,14 +2,19 @@
 
 == Install required packages ==
 
-> wget http://superb-west.dl.sourceforge.net/sourceforge/crfpp/CRF++-0.47.tar.gz
-> tar xvzf CRF++-0.47.tar.gz
-> cd CRF++-0.47
-> ./configure && make && sudo make install
-> cd CRF++-0.47/ruby
-> ruby extconf.rb
-> make
-> sudo make install
+wget http://superb-west.dl.sourceforge.net/sourceforge/crfpp/CRF++-0.47.tar.gz
+tar xvzf CRF++-0.47.tar.gz
+cd CRF++-0.47
+./configure && make && sudo make install
+cd CRF++-0.47/ruby
+ruby extconf.rb
+make
+sudo make install
+
+If you are running fedora, you will have to take these additional steps:
+su
+echo "/usr/local/lib" > /etc/ld.so.conf.d/default-i386.conf
+ldconfig
 
 == Configure Postgres ==
 
