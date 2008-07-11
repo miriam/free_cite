@@ -1,3 +1,10 @@
+/* For use with the syntax ruby gem. 
+ * To format Ruby code for use with this stylesheet:
+   require 'syntax/convertors/html'
+   in_data = '<your ruby code>'
+   convertor = Syntax::Convertors::HTML.for_syntax "ruby"
+   code_html = convertor.convert(in_data)
+*/
 
 pre {
     background-color: #f1f1f3;
@@ -9,8 +16,6 @@ pre {
     margin: 4px 0px;
     width: 95%;
 }
-
-
 
 /* Syntax highlighting */
 pre .normal {}
