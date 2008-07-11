@@ -1,1 +1,106 @@
+<%= stylesheet_link_tag "code" %>
+
 <h1>API Instructions</h1>
+
+<h3>Parse a citation</h3>
+<p><b>(POST) (FIXME:hostname)/citations/create</b></p>
+<ul>
+  <li><i>Required argument:</i> <code>citation</code> or <code>citation[]</code> - The string(s) to parse.</li> 
+  <li><i>Header:</i> <code>Accept: text/xml</code></li>
+</ul>
+<p><b>Returns</b> a list of parsed citations in xml format. Each parsed citation includes a ContextObject with the citation as the referent.<p>
+<p><b>Status code:</b> 201</p>
+
+<h3>Examples</h3>
+<h4> Using Ruby:<br>
+<pre><span class="ident">require</span> <span class="punct">'</span><span class="string">net/http</span><span class="punct">'</span>
+
+<span class="constant">Net</span><span class="punct">::</span><span class="constant">HTTP</span><span class="punct">.</span><span class="ident">start</span><span class="punct">('</span><span class="string">localhost</span><span class="punct">',</span> <span class="number">3000</span><span class="punct">)</span> <span class="keyword">do</span> <span class="punct">|</span><span class="ident">http</span><span class="punct">|</span>
+  <span class="ident">response</span> <span class="punct">=</span> <span class="ident">http</span><span class="punct">.</span><span class="ident">post</span><span class="punct">('</span><span class="string">/citations/create</span><span class="punct">',</span>
+    <span class="punct">'</span><span class="string">citation=A. Bookstein and S. T. Klein,  \ 
+    Detecting content-bearing words by serial clustering,  \ 
+    Proceedings of the Nineteenth Annual International ACM SIGIR Conference \
+    on Research and Development in Information Retrieval,   \
+    pp. 319327,   1995.</span><span class="punct">',</span>
+    <span class="punct">'</span><span class="string">Accept</span><span class="punct">'</span> <span class="punct">=&gt;</span> <span class="punct">'</span><span class="string">text/xml</span><span class="punct">')</span>
+
+  <span class="ident">puts</span> <span class="punct">&quot;</span><span class="string">Code: <span class="expr">#{response.code}</span></span><span class="punct">&quot;</span>
+  <span class="ident">puts</span> <span class="punct">&quot;</span><span class="string">Message: <span class="expr">#{response.message}</span></span><span class="punct">&quot;</span>
+  <span class="ident">puts</span> <span class="punct">&quot;</span><span class="string">Body:<span class="escape">\n</span> <span class="expr">#{response.body}</span></span><span class="punct">&quot;</span>
+<span class="keyword">end</span>
+</pre>
+
+
+<h4> Using <code>curl</code>:<br>
+<h5>Parsing a single citation:</h5>
+<code>
+curl -H 'Accept: text/xml' -d "citation=Udvarhelyi, I.S., Gatsonis,
+C.A., Epstein, A.M., Pashos, C.L., Newhouse, J.P. and McNeil, B.J.
+Acute Myocardial Infarction in the Medicare population: process of
+care and clinical outcomes. Journal of the American Medical
+Association, 1992; 18:2530-2536.  "
+http://0.0.0.0:3000/citations/create
+</code>
+
+
+<h5>Parsing multiple citations:</h5>
+<code>
+curl -H 'Accept: text/xml' -d "citation[]=Fielderman, A., Silvester,
+G., Gatsonis, C.A., Hoenig, J., Flynn, S. Prognostic significance of
+flow cytometric DNA analysis and proliferative index in stage I
+non-small cell lung cancer. American Review of Respiratory Disease,
+1992; 146:707-710.&citation[]=Udvarhelyi, I.S., Gatsonis, C.A.,
+Epstein, A.M., Pashos, C.L., Newhouse, J.P. and McNeil, B.J. Acute
+Myocardial Infarction in the Medicare population: process of care and
+clinical outcomes. Journal of the American Medical Association, 1992;
+18:2530-2536.  " http://0.0.0.0:3000/citations/create
+</code>
+
+
+
+<h5>Example Return:</h5>
+<pre>
+<span class="punct">&lt;</span><span class="tag">citations</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">citation</span> <span class="attribute">valid</span><span class="punct">=</span><span class="attribute">true</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">authors</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">author</span><span class="punct">&gt;</span>I S Udvarhelyi<span class="punct">&lt;/</span><span class="tag">author</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">author</span><span class="punct">&gt;</span>C A Gatsonis<span class="punct">&lt;/</span><span class="tag">author</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">author</span><span class="punct">&gt;</span>A M Epstein<span class="punct">&lt;/</span><span class="tag">author</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">author</span><span class="punct">&gt;</span>C L Pashos<span class="punct">&lt;/</span><span class="tag">author</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">author</span><span class="punct">&gt;</span>J P Newhouse<span class="punct">&lt;/</span><span class="tag">author</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">author</span><span class="punct">&gt;</span>B J McNeil<span class="punct">&lt;/</span><span class="tag">author</span><span class="punct">&gt;</span>
+<span class="punct">&lt;/</span><span class="tag">authors</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">title</span><span class="punct">&gt;</span>Acute Myocardial Infarction in the Medicare population: process of care and clinical outcomes<span class="punct">&lt;/</span><span class="tag">title</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">journal</span><span class="punct">&gt;</span>Journal of the American Medical Association<span class="punct">&lt;/</span> <span class="tag">journal</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">pages</span><span class="punct">&gt;</span>18--2530<span class="punct">&lt;/</span><span class="tag">pages</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">year</span><span class="punct">&gt;</span>1992<span class="punct">&lt;/</span><span class="tag">year</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="tag">raw_string</span><span class="punct">&gt;</span>Udvarhelyi, I.S., Gatsonis, C.A., Epstein, A.M., Pashos, C.L., Newhouse, J.P. and McNeil, B.J. Acute Myocardial Infarction in the Medicare population: process of care and clinical outcomes. Journal of the American Medical Association, 1992; 18:2530-2536.<span class="punct">&lt;/</span><span class="tag">raw_string</span><span class="punct">&gt;</span>
+<span class="punct">&lt;</span><span class="namespace">ctx</span><span class="punct">:</span><span class="tag">context-objects</span> <span class="namespace">xmlns</span><span class="punct">:</span><span class="attribute">xsi</span><span class="punct">='</span><span class="string">http://www.w3.org/2001/XMLSchema-instance</span><span class="punct">'</span> <span class="namespace">xsi</span><span class="punct">:</span><span class="attribute">schemaLocation</span><span class="punct">='</span><span class="string">info:ofi/fmt:xml:xsd:ctx http://www.openurl.info/registry/docs/info:ofi/fmt:xml:xsd:ctx</span><span class="punct">'</span> <span class="namespace">xmlns</span><span class="punct">:</span><span class="attribute">ctx</span><span class="punct">='</span><span class="string">info:ofi/fmt:xml:xsd:ctx</span><span class="punct">'&gt;</span>
+  <span class="punct">&lt;</span><span class="namespace">ctx</span><span class="punct">:</span><span class="tag">context-object</span> <span class="attribute">timestamp</span><span class="punct">='</span><span class="string">2008-07-11T00:57:33-04:00</span><span class="punct">'</span> 
+  <span class="attribute">encoding</span><span class="punct">='</span><span class="string">info:ofi/enc:UTF-8</span><span class="punct">'</span> <span class="attribute">version</span><span class="punct">='</span><span class="string">Z39.88-2004</span><span class="punct">'</span> <span class="attribute">identifier</span><span class="punct">=''&gt;</span>
+    <span class="punct">&lt;</span><span class="namespace">ctx</span><span class="punct">:</span><span class="tag">referent</span><span class="punct">&gt;</span>
+      <span class="punct">&lt;</span><span class="namespace">ctx</span><span class="punct">:</span><span class="tag">metadata-by-val</span><span class="punct">&gt;</span>
+        <span class="punct">&lt;</span><span class="namespace">ctx</span><span class="punct">:</span><span class="tag">format</span><span class="punct">&gt;</span>info:ofi/fmt:xml:xsd:journal<span class="punct">&lt;/</span><span class="namespace">ctx</span><span class="punct">:</span><span class="tag">format</span><span class="punct">&gt;</span>
+        <span class="punct">&lt;</span><span class="namespace">ctx</span><span class="punct">:</span><span class="tag">metadata</span><span class="punct">&gt;</span>
+          <span class="punct">&lt;</span><span class="tag">journal</span> <span class="namespace">xmlns</span><span class="punct">:</span><span class="attribute">rft</span><span class="punct">='</span><span class="string">info:ofi/fmt:xml:xsd:journal</span><span class="punct">'</span> <span class="namespace">xsi</span><span class="punct">:</span><span class="attribute">schemaLocation</span><span class="punct">='</span><span class="string">info:ofi/fmt:xml:xsd:journal http://www.openurl.info/registry/docs/info:ofi/fmt:xml:xsd:journal</span><span class="punct">'&gt;</span>
+            <span class="punct">&lt;</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">atitle</span><span class="punct">&gt;</span>Acute Myocardial Infarction in the Medicare population: process of care and clinical outcomes<span class="punct">&lt;/</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">atitle</span><span class="punct">&gt;</span>
+            <span class="punct">&lt;</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">spage</span><span class="punct">&gt;</span>18<span class="punct">&lt;/</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">spage</span><span class="punct">&gt;</span>
+            <span class="punct">&lt;</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">date</span><span class="punct">&gt;</span>1992<span class="punct">&lt;/</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">date</span><span class="punct">&gt;</span>
+            <span class="punct">&lt;</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">stitle</span><span class="punct">&gt;</span>Journal of the American Medical Association<span class="punct">&lt;/</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">stitle</span><span class="punct">&gt;</span>
+            <span class="punct">&lt;</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">genre</span><span class="punct">&gt;</span>article<span class="punct">&lt;/</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">genre</span><span class="punct">&gt;</span>
+            <span class="punct">&lt;</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">epage</span><span class="punct">&gt;</span>2530<span class="punct">&lt;/</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">epage</span><span class="punct">&gt;</span> 
+            <span class="punct">&lt;</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">au</span><span class="punct">&gt;</span>I S Udvarhelyi<span class="punct">&lt;/</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">au</span><span class="punct">&gt;</span> 
+            <span class="punct">&lt;</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">au</span><span class="punct">&gt;</span>C A Gatsonis<span class="punct">&lt;/</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">au</span><span class="punct">&gt;</span> 
+            <span class="punct">&lt;</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">au</span><span class="punct">&gt;</span>A M EpsteinC<span class="punct">&lt;/</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">au</span><span class="punct">&gt;</span> 
+            <span class="punct">&lt;</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">au</span><span class="punct">&gt;</span>L Pashos<span class="punct">&lt;/</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">au</span><span class="punct">&gt;</span> 
+            <span class="punct">&lt;</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">au</span><span class="punct">&gt;</span>J P Newhouse<span class="punct">&lt;/</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">au</span><span class="punct">&gt;</span> 
+            <span class="punct">&lt;</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">au</span><span class="punct">&gt;</span>B J McNeil<span class="punct">&lt;/</span><span class="namespace">rft</span><span class="punct">:</span><span class="tag">au</span><span class="punct">&gt;</span> 
+          <span class="punct">&lt;/</span><span class="tag">journal</span><span class="punct">&gt;</span>
+        <span class="punct">&lt;/</span><span class="namespace">ctx</span><span class="punct">:</span><span class="tag">metadata</span><span class="punct">&gt;</span>
+      <span class="punct">&lt;/</span><span class="namespace">ctx</span><span class="punct">:</span><span class="tag">metadata-by-val</span><span class="punct">&gt;</span>
+    <span class="punct">&lt;/</span><span class="namespace">ctx</span><span class="punct">:</span><span class="tag">referent</span><span class="punct">&gt;</span>
+  <span class="punct">&lt;/</span><span class="namespace">ctx</span><span class="punct">:</span><span class="tag">context-object</span><span class="punct">&gt;</span>
+<span class="punct">&lt;/</span><span class="namespace">ctx</span><span class="punct">:</span><span class="tag">context-objects</span><span class="punct">&gt;</span>
+<span class="punct">&lt;/</span><span class="tag">citation</span><span class="punct">&gt;</span>
+<span class="punct">&lt;/</span><span class="tag">citations</span><span class="punct">&gt;</span>
+</pre>

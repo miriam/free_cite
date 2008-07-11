@@ -14,6 +14,9 @@ class CitationsController < ApplicationController
     @citations = Citation.find :all
   end
 
+  def api_instructions
+  end
+
   def create
     unless params[:citation]
       render :text => "Citation text is missing", :status => :bad_request
