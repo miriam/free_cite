@@ -68,8 +68,10 @@ module OpenURL
         if @metadata.length > 0
           meta["metadata"] = meta["metadata-by-val"].add_element("ctx:metadata")
           @metadata.each do |k,v|
-            meta[k] = meta["metadata"].add_element("ctx:"+k)
-            meta[k].text = v
+            (Array === v ? v : [v]).each {|val|
+              meta[k] = meta["metadata"].add_element("ctx:"+k)
+              meta[k].text = val
+            }
           end
         end
       end
@@ -173,8 +175,10 @@ module OpenURL
             meta["format_container"].add_namespace(@abbr, meta["format"].text)
             meta["format_container"].add_attribute("xsi:schemaLocation", meta["format"].text+" http://www.openurl.info/registry/docs/info:ofi/fmt:xml:xsd:"+@format)          
             @metadata.each do |k,v|
-              meta[k] = meta["format_container"].add_element(@abbr+":"+k)
-              meta[k].text = v
+              (Array === v ? v : [v]).each {|val|
+                meta[k] = meta["format_container"].add_element(@abbr+":"+k)
+                meta[k].text = val
+              }
             end
           end
         end
