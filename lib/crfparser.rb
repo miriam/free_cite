@@ -101,10 +101,14 @@ class CRFParser
     tokens_and_tags = cstr.split(/\s+/)
     tag = nil
     self.clear
-    tokens = tokens_and_tags.reject {|t| t =~ /^<[\/]{0,1}([a-z]+)>$/}
 
-    # if this is a testing run, disregard anything that looks like a tag
-    tokens = tokens_and_tags unless training
+    if training
+      tokens = tokens_and_tags.reject {|t| t =~ /^<[\/]{0,1}([a-z]+)>$/}
+    else  
+      # if this is a testing run, disregard anything that looks like a tag
+      tokens = tokens_and_tags unless training
+    end
+
     toki = 0
     tokens_and_tags.each_with_index {|tok, i|
       # if this is training data, grab the mark-up tag and then skip it
