@@ -166,7 +166,7 @@ class CRFParser
     model=MODEL_FILE, template=TEMPLATE_FILE)
 
     write_training_file(tagged_refs, training_data)
-    `crf_learn #{TEMPLATE_FILE} #{TRAINING_DATA} #{MODEL_FILE}`
+    `crf_learn #{template} #{training_data} #{model}`
   end
 
 end
