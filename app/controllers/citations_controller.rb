@@ -2,7 +2,6 @@ require 'citation'
 
 class CitationsController < ApplicationController
   def index
-    list
     render :action => 'parse_string'
   end
 
@@ -11,7 +10,7 @@ class CitationsController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    @citations = Citation.find :all
+    redirect_to :action => "show"
   end
 
   def api_instructions
