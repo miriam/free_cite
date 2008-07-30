@@ -45,6 +45,9 @@ Rails::Initializer.run do |config|
   # See Rails::Configuration for more options
 end
 
+# add helpers
+require 'array_helpers'
+
 # Add new inflection rules using the following format 
 # (all these examples are active by default):
 # Inflector.inflections do |inflect|
