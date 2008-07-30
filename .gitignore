@@ -4,7 +4,6 @@ config/settings.rb
 log
 test/fixtures/calendars
 .DS_Store
-db/schema.rb
 public/javascripts/*_12*.js
 public/stylesheets/*_12*.css
 tmp/
