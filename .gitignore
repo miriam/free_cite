@@ -10,3 +10,9 @@ public/stylesheets/*_12*.css
 tmp/
 *swp
 lib/resources/trainingdata/training_data.txt
+test/model/testing_data*txt
+test/model/testing_data*txt
+test/model/training_refs*txt
+test/model/training_refs*txt
+test/model/model
+test/model/output.txt
