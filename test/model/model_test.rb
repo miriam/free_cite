@@ -7,10 +7,12 @@ TESTING_DATA = "#{DIR}/testing_data.txt"
 TRAINING_REFS = "#{DIR}/training_refs.txt"
 TESTING_REFS = "#{DIR}/testing_refs.txt"
 MODEL_FILE = "#{DIR}/model"
-TEMPLATE_FILE = "#{DIR}/template.txt"
+TEMPLATE_FILE = "#{DIR}/../../lib/resources/parsCit.template"
 OUTPUT_FILE = "#{DIR}/output.txt"
 ANALYSIS_FILE = "#{DIR}/analysis.txt"
-MODEL_BRANCH_INDEX = "#{DIR}/model_branch_index.txt"
+REFS_PREFIX = "training_refs_"
+DATA_PREFIX = "training_data_"
+TAG = "model_test"
 
 class ModelTest
   
@@ -31,57 +33,81 @@ class ModelTest
     @branch
   end
 
-  def run_test(commit=false, commit_message="evaluating model", description=nil, testpct=0.3)
-    # Update the model_branch_index to include this branch
+  def aggregate_tags
+    branches = `git branch`.gsub(/\*/, '').strip.split(/\s+/)
+    branches.each {|branch|
+      `git checkout #{branch}`
+      tags = `git tag -l #{TAG}\*`.strip.split(/\s+/)
+    }
+  end
+
+  def run_test(commit=false, commit_message="evaluating model", tag_name='', k=10)
+
+    cross_validate(k)
+    accuracy = analyze(k)
+
+    if commit and tag_name.strip.blank?
+      raise "You must supply a tag name if you want to commit and tag this test"
+    end  
+
     if commit
-      `echo "#{branch},#{version},#{description}" >> #{MODEL_BRANCH_INDEX}` 
-    end
-
-    puts "Generating testing and training data..."
-    generate_data(testpct)
-    puts "Training model..."
-    train
-    puts "Testing model..."
-    test
-    puts "Evaluating results..."
-    analyze
-
-    if commit
-      str = "git add #{[TRAINING_DATA, TESTING_DATA, TRAINING_REFS, \
-        TESTING_REFS, MODEL_FILE, TEMPLATE_FILE, OUTPUT_FILE,       \
-        ANALYSIS_FILE, MODEL_BRANCH_INDEX].join(" ")}"
-
+      str = "git add #{ANALYSIS_FILE}"
       puts "Adding test files to index \n#{str}"
       `#{str}`
 
-      str = `git commit --message "#{commit_message}" #{[TRAINING_DATA, \
-        TESTING_DATA, TRAINING_REFS, TESTING_REFS, MODEL_FILE,          \
-        TEMPLATE_FILE, OUTPUT_FILE, ANALYSIS_FILE,                      \
-        MODEL_BRANCH_INDEX].join(" ")}` 
-
+      str = "git commit --message '#{commit_message}' #{ANALYSIS_FILE}" 
       puts "Committing files to source control \n#{str}"
+      `#{str}`
+
+      str = "git tag #{TAG}_#{tag_name}_#{accuracy}"
+      puts "Tagging: \n#{str}"
       `#{str}`
     end
   end
 
   def cleanup
     `rm -f #{[TRAINING_DATA, TESTING_DATA, TRAINING_REFS, TESTING_REFS, MODEL_FILE, \
-      TEMPLATE_FILE, OUTPUT_FILE, ANALYSIS_FILE].join(" ")}`
+      OUTPUT_FILE].join(" ")} #{DIR}/#{DATA_PREFIX}*txt #{DIR}/#{REFS_PREFIX}*txt`
+  end
+
+  def cross_validate(k=10)
+    generate_data(k)
+    # clear the output file
+    f = File.open(OUTPUT_FILE, 'w')
+    f.close
+    k.times {|i|
+      puts "Performing #{i+1}th iteration of #{k}-fold cross validation"
+      # generate training refs
+      f = File.open(TRAINING_REFS, 'w')
+      f.close
+      k.times {|j|
+        next if j == i
+        `cat #{DIR}/#{REFS_PREFIX}#{j}.txt >> #{TRAINING_REFS}`
+      }
+      puts "Training model"
+      train
+      `cat #{DIR}/#{DATA_PREFIX}#{i}.txt > #{TESTING_DATA}`
+      puts "Testing model"
+      test
+    }
   end
 
   # testpct: percentage of tagged references to hold out for testing
-  def generate_data(testpct=0.3)
+  def generate_data(k=10)
+    testpct = k/100.0
+    files = []
+    k.times {|i| files << File.open("#{DIR}/#{REFS_PREFIX}#{i}.txt", 'w') }
     f = File.open(TAGGED_REFERENCES, 'r')
-    test = File.open(TESTING_REFS, 'w')
-    train = File.open(TRAINING_REFS, 'w')
     while l = f.gets
-      rand < testpct ? test.write(l) : train.write(l)
+      files[((rand * k) % k).floor].write(l)
     end
     f.close
-    test.flush; test.close
-    train.flush; train.close
-    @crf.write_training_file(TRAINING_REFS, TRAINING_DATA)
-    @crf.write_training_file(TESTING_REFS, TESTING_DATA)
+    files.each_with_index {|f, i| 
+      f.flush
+      f.close
+      @crf.write_training_file("#{DIR}/#{REFS_PREFIX}#{i}.txt", 
+                               "#{DIR}/#{DATA_PREFIX}#{i}.txt")
+    }
   end
   
   def train
@@ -89,52 +115,53 @@ class ModelTest
   end
   
   def test
-    str = "crf_test -m #{MODEL_FILE} #{TESTING_DATA} > #{OUTPUT_FILE}"
+    str = "crf_test -m #{MODEL_FILE} #{TESTING_DATA} >> #{OUTPUT_FILE}"
     puts str
     `#{str}`
   end
   
-  def analyze
-    # get the number of training exaples
-    training_num = `wc #{TRAINING_REFS}`.split.first
-    testing_num = `wc #{TESTING_REFS}`.split.first
+  def analyze(k)
+    # get the size of the corpus
+    corpus_size = `wc #{TAGGED_REFERENCES}`.split.first
 
-    # go through the files once to get all the labels
-    testf = File.open(OUTPUT_FILE, 'r')
-    truthf = File.open(TESTING_DATA, 'r')
+    # go through all training/testing data to get complete list of output tags
     labels = {}
-    while (testl = testf.gets) && (truthl = truthf.gets)
-      next if testl.strip.blank? && truthl.strip.blank?
-      labels[testl.strip.split.last] = true
-      labels[truthl.strip.split.last] = true
-    end
+    [TRAINING_DATA, TESTING_DATA].each {|fn|
+      f = File.open(fn, 'r')
+      while l = f.gets
+        next if l.strip.blank?
+        labels[l.strip.split.last] = true
+      end
+      f.close
+    }
     labels = labels.keys.sort
+    puts "got labels:\n#{labels.join("\n")}"
 
     # reopen and go through the files again
     # for each reference, populate a confusion matrix hash
     references = []
     testf = File.open(OUTPUT_FILE, 'r')
-    truthf = File.open(TESTING_DATA, 'r')
     ref = new_hash(labels)
-    while (testl = testf.gets) && (truthl = truthf.gets)
-      if testl.strip.blank? && truthl.strip.blank?
+    while testl = testf.gets
+      if testl.strip.blank? 
         references << ref
         ref = new_hash(labels)
         next
       end
-      te = testl.strip.split.last
-      tr = truthl.strip.split.last
+      w = testl.strip.split
+      te = w[-1]
+      tr = w[-2]
+      puts "#{te} #{tr}"
       ref[tr][te] += 1
     end
     testf.close
-    truthf.close
   
     # print results to a file
     f = File.open(ANALYSIS_FILE, 'w')
     f.write "Results for model\n branch: #{branch}\n version: #{version}\n"
     f.write "Test run on:,#{Time.now}\n"
-    f.write "Trained on:,#{training_num}\n"
-    f.write "Tested on:,#{testing_num}\n\n"
+    f.write "K-fold x-validation:,#{k}\n"
+    f.write "Corpus size:,#{corpus_size}\n\n"
 
     # aggregate results in total hash
     total = {}
@@ -177,7 +204,6 @@ class ModelTest
     avgs = references.map {|r|
       n = labels.map {|label| r[label][label] }.sum
       d = labels.map {|lab| r[lab].values.sum }.sum
-      puts "#{n} #{d}"
       perfect += 1 if n == d
       n.to_f / d
     }
@@ -195,8 +221,7 @@ class ModelTest
     f.flush
     f.close
 
-    references
- 
+    return n/d.to_f
   end
 
   private
