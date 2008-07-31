@@ -51,11 +51,11 @@ class ModelTest
     end  
 
     if commit
-      str = "git add #{ANALYSIS_FILE}"
+      str = "git add #{ANALYSIS_FILE} #{OUTPUT_FILE}"
       puts "Adding test files to index \n#{str}"
       `#{str}`
 
-      str = "git commit --message '#{commit_message}' #{ANALYSIS_FILE}" 
+      str = "git commit --message '#{commit_message}' #{ANALYSIS_FILE} #{OUTPUT_FILE}" 
       puts "Committing files to source control \n#{str}"
       `#{str}`
 
@@ -66,8 +66,9 @@ class ModelTest
   end
 
   def cleanup
-    `rm -f #{[TRAINING_DATA, TESTING_DATA, TRAINING_REFS, TESTING_REFS, MODEL_FILE, \
-      OUTPUT_FILE].join(" ")} #{DIR}/#{DATA_PREFIX}*txt #{DIR}/#{REFS_PREFIX}*txt`
+    to_remove = [TRAINING_DATA, TESTING_DATA, TRAINING_REFS, TESTING_REFS, 
+      MODEL_FILE]
+    `rm -f #{to_remove.join(" ")} #{DIR}/#{DATA_PREFIX}*txt #{DIR}/#{REFS_PREFIX}*txt`
   end
 
   def cross_validate(k=10)
