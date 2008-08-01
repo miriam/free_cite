@@ -41,10 +41,28 @@ class ModelTest
     }
   end
 
+  def benchmark
+    refs = []
+    f = File.open(TESTING_REFS, 'r')
+    while line = f.gets
+      refs << line.strip
+    end  
+    # strip out tags
+    refs.map! {|s| s.gsub(/<[^>]*>/, '')}
+    # parse one string, since the lexicon is lazily evaluated
+    Citation.create_from_string(refs.first)
+    time = Benchmark.measure {
+      refs.each {|ref| Citation.create_from_string(ref) }
+    }
+    return (time.real / refs.length.to_f)
+  end
+
   def run_test(commit=false, commit_message="evaluating model", tag_name='', k=10)
 
     cross_validate(k)
     accuracy = analyze(k)
+    time = benchmark
+    `echo "Average time per parse:,#{time}\n" >> #{ANALYSIS_FILE}`
 
     if commit and tag_name.strip.blank?
       raise "You must supply a tag name if you want to commit and tag this test"
