@@ -106,8 +106,17 @@ class CRFParser
       tokens = tokens_and_tags.reject {|t| t =~ /^<[\/]{0,1}([a-z]+)>$/}
     else  
       # if this is a testing run, disregard anything that looks like a tag
-      tokens = tokens_and_tags unless training
+      tokens = tokens_and_tags 
     end
+
+    # strip tokens of punctuation
+    tokensnp = tokens.map {|t|
+      toknp = t.gsub(/[^\w]/, '')
+      toknp = "EMPTY" if toknp.blank?
+      toknp
+    }
+    # downcase stripped tokens
+    tokenslcnp = tokensnp.map {|t| t == "EMPTY" ? "EMPTY" : t.downcase }
 
     toki = 0
     tokens_and_tags.each_with_index {|tok, i|
@@ -118,24 +127,19 @@ class CRFParser
           next
         elsif tok =~ /^<\/([a-z]+)>$/ 
           tok = nil
-          raise TrainingError, "Mark-up tag mismatch #{tag} != #{$1}" if $1 != tag
+          raise TrainingError, "Mark-up tag mismatch #{tag} != #{$1}\n#{cstr}" if $1 != tag
           next
         end
       end
       feats = {}
 
-      # strip token of any punctuation
-      toknp = tok.gsub(/[^\w]/, '')
-      toknp = "EMPTY" if toknp.blank?
-      # downcase the stripped token
-      toklcnp = (toknp == "EMPTY" ? "EMPTY" : toknp.downcase)
 
       # If we are training, there should always be a tag defined
       if training && tok.nil?
         raise TrainingError, "Incorrect mark-up:\n #{cstr}" 
       end  
       @token_features.each {|f| 
-        feats[f] = self.send(f, tokens, toknp, toklcnp, toki) 
+        feats[f] = self.send(f, tokens, tokensnp, tokenslcnp, toki) 
       }
       toki += 1
 

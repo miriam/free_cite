@@ -56,7 +56,7 @@ module TokenFeatures
     @dict_status = nil
   end
 
-  def last_char(toks, toknp, toklcnp, idx)
+  def last_char(toks, toksnp, tokslcnp, idx)
     case toks[idx][-1,1]
       when /[a-z]/
         'a'
@@ -69,21 +69,21 @@ module TokenFeatures
     end
   end
 
-  def first_1_char(toks, toknp, toklcnp, idx); toks[idx][0,1]; end
-  def first_2_chars(toks, toknp, toklcnp, idx); toks[idx][0,2]; end
-  def first_3_chars(toks, toknp, toklcnp, idx); toks[idx][0,3]; end
-  def first_4_chars(toks, toknp, toklcnp, idx); toks[idx][0,4]; end
-  def first_5_chars(toks, toknp, toklcnp, idx); toks[idx][0,5]; end
+  def first_1_char(toks, toksnp, tokslcnp, idx); toks[idx][0,1]; end
+  def first_2_chars(toks, toksnp, tokslcnp, idx); toks[idx][0,2]; end
+  def first_3_chars(toks, toksnp, tokslcnp, idx); toks[idx][0,3]; end
+  def first_4_chars(toks, toksnp, tokslcnp, idx); toks[idx][0,4]; end
+  def first_5_chars(toks, toksnp, tokslcnp, idx); toks[idx][0,5]; end
 
-  def last_1_char(toks, toknp, toklcnp, idx); toks[idx][-1,1]; end
-  def last_2_chars(toks, toknp, toklcnp, idx); toks[idx][-2,2] || toks[idx]; end
-  def last_3_chars(toks, toknp, toklcnp, idx); toks[idx][-3,3] || toks[idx]; end
-  def last_4_chars(toks, toknp, toklcnp, idx); toks[idx][-4,4] || toks[idx]; end
+  def last_1_char(toks, toksnp, tokslcnp, idx); toks[idx][-1,1]; end
+  def last_2_chars(toks, toksnp, tokslcnp, idx); toks[idx][-2,2] || toks[idx]; end
+  def last_3_chars(toks, toksnp, tokslcnp, idx); toks[idx][-3,3] || toks[idx]; end
+  def last_4_chars(toks, toksnp, tokslcnp, idx); toks[idx][-4,4] || toks[idx]; end
 
-  def toklcnp(toks, toknp, toklcnp, idx); toklcnp; end
+  def toklcnp(toks, toksnp, tokslcnp, idx); tokslcnp[idx]; end
 
-  def capitalization(toks, toknp, toklcnp, idx)
-    case toknp
+  def capitalization(toks, toksnp, tokslcnp, idx)
+    case toksnp[idx]
       when /^[A-Z]$/
         "singleCap"
       when /^[A-Z][a-z]+/
@@ -95,24 +95,24 @@ module TokenFeatures
     end
   end
 
-  def numbers(toks, toknp, toklcnp, idx)
-    (toknp         =~ /^(19|20)[0-9][0-9]$/)   ? "year"         :
+  def numbers(toks, toksnp, tokslcnp, idx)
+    (toksnp[idx]         =~ /^(19|20)[0-9][0-9]$/)   ? "year"         :
       (toks[idx]   =~ /[0-9]\-[0-9]/)          ? "possiblePage" :
       (toks[idx]   =~ /[0-9]\([0-9]+\)/)       ? "possibleVol"  :
-      (toknp       =~ /^[0-9]$/)               ? "1dig"         :
-      (toknp       =~ /^[0-9][0-9]$/)          ? "2dig"         :
-      (toknp       =~ /^[0-9][0-9][0-9]$/)     ? "3dig"         :
-      (toknp       =~ /^[0-9]+$/)              ? "4+dig"        :
-      (toknp       =~ /^[0-9]+(th|st|nd|rd)$/) ? "ordinal"      :
-      (toknp       =~ /[0-9]/)                 ? "hasDig"       : "nonNum"
+      (toksnp[idx]       =~ /^[0-9]$/)               ? "1dig"         :
+      (toksnp[idx]       =~ /^[0-9][0-9]$/)          ? "2dig"         :
+      (toksnp[idx]       =~ /^[0-9][0-9][0-9]$/)     ? "3dig"         :
+      (toksnp[idx]       =~ /^[0-9]+$/)              ? "4+dig"        :
+      (toksnp[idx]       =~ /^[0-9]+(th|st|nd|rd)$/) ? "ordinal"      :
+      (toksnp[idx]       =~ /[0-9]/)                 ? "hasDig"       : "nonNum"
   end
 
-  def possible_editor(toks, toknp, toklcnp, idx)
+  def possible_editor(toks, toksnp, tokslcnp, idx)
     if @possible_editor
       @possible_editor
     else
       @possible_editor = 
-        ((toks.join(" ") =~ /(ed\.|editor|editors|eds\.)/) ? 
+        ((tokslcnp.join(" ") =~ /(ed|editor|editors|eds|edited)/) ? 
           "possibleEditors" : "noEditors")
     end
   end
@@ -120,11 +120,11 @@ module TokenFeatures
   #FIXME: this is broken in parsCit, but not broken here. May want to break it
   # and re-try
   # In parseCit, the length of toks includes the tags
-  def location(toks, toknp, toklcnp, idx)
+  def location(toks, toksnp, tokslcnp, idx)
     r = ((idx.to_f / toks.length) * 10).round
   end  
 
-  def punct(toks, toknp, toklcnp, idx)
+  def punct(toks, toksnp, tokslcnp, idx)
     (toks[idx]   =~ /^[\"\'\`]/)                    ? "leadQuote"   :
       (toks[idx] =~ /[\"\'\`][^s]?$/)               ? "endQuote"    :
       (toks[idx] =~ /\-.*\-/)                       ? "multiHyphen" :
@@ -134,32 +134,32 @@ module TokenFeatures
       (toks[idx] =~ /^[0-9]{2,5}\([0-9]{2,5}\).?$/) ? "possibleVol" : "others"
   end
 
-  def a_is_in_dict(toks, toknp, toklcnp, idx)
+  def a_is_in_dict(toks, toksnp, tokslcnp, idx)
     ret = {}
-    @dict_status = DICT[toklcnp] ? DICT[toklcnp] : 0
+    @dict_status = DICT[tokslcnp[idx]] ? DICT[tokslcnp[idx]] : 0
   end  
 
-  def publisherName(toks, toknp, toklcnp, idx)
+  def publisherName(toks, toksnp, tokslcnp, idx)
     @dict_status & DICT_FLAGS['publisherName'] > 0 ? 'publisherName' : 'no'
   end
 
-  def placeName(toks, toknp, toklcnp, idx)
+  def placeName(toks, toksnp, tokslcnp, idx)
     @dict_status & DICT_FLAGS['placeName'] > 0 ? 'placeName' : 'no'
   end
 
-  def monthName(toks, toknp, toklcnp, idx)
+  def monthName(toks, toksnp, tokslcnp, idx)
     @dict_status & DICT_FLAGS['monthName'] > 0 ? 'monthName' : 'no'
   end
 
-  def lastName(toks, toknp, toklcnp, idx)
+  def lastName(toks, toksnp, tokslcnp, idx)
     @dict_status & DICT_FLAGS['lastName'] > 0 ? 'lastName' : 'no'
   end 
 
-  def femaleName(toks, toknp, toklcnp, idx)
+  def femaleName(toks, toksnp, tokslcnp, idx)
     @dict_status & DICT_FLAGS['femaleName'] > 0 ? 'femaleName' : 'no'
   end 
 
-  def maleName(toks, toknp, toklcnp, idx)
+  def maleName(toks, toksnp, tokslcnp, idx)
     @dict_status & DICT_FLAGS['maleName'] > 0 ? 'maleName' : 'no'
   end 
 
