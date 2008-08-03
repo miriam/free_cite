@@ -24,6 +24,7 @@
 #  marker      :string(255)
 #
 
+require 'rexml/document'
 require 'crfparser'
 require 'string_helpers'
 require 'openurl'
@@ -47,48 +48,51 @@ class Citation < ActiveRecord::Base
   end
 
   def to_spans
-    txt = to_xml
-    txt.gsub!(/<([^\/>]*)( [^>]*)?>/, '<span class="\1" title="\1">')
-    txt.gsub!(/<\/.*>/, '</span>')
-    txt.sub!(/<span class="raw_string"/, '<br><span class="raw_string"')
+    txt = to_xml.to_s
+    txt.gsub!(/<([^>]*)\s+[^>]+\s*>/, '<\1>')
+    txt.gsub!(/<\/[^>]*>/, "</span>")
+    txt.gsub!(/<([^>^\/]*)>/, '<span class="\1">')
+    txt.sub!(/<span class="raw_string">/, '<br><span class="raw_string">')
+    txt.gsub!(/>/, '> ')
     txt
   end
 
-  def to_context_object
-    return citation_to_context_obj(self)
-  end
-
   def to_xml(opt=nil)
-    xml = "<citation valid=#{valid_citation?}>\n"
-    if !authors.empty?
-      xml << "<authors>\n"
-      authors.each {|auth| xml << "<author>#{auth.xml_escape}</author>\n" }
-      xml << "</authors>\n"
-    end
+    doc = REXML::Document.new
+    ci = doc.add_element("citation")
+    aus = ci.add_element("authors")
+    authors.each {|a| 
+      au = aus.add_element("author")
+      au.text = a
+    }
+    ci.add_attribute("valid", valid_citation?)
 
     %w(title journal booktitle editor volume publisher institution location 
        number pages year tech note ).each {|heading|
 
       if value = self.attributes[heading]
-        xml << "<#{heading}>#{value.to_s.xml_escape}</#{heading}>\n"
+        el = ci.add_element(heading)
+        el.text = value.to_s
       end
     }
 
     if !contexts.empty?
-      xml << "<contexts>\n"
-      contexts.each {|ctx| xml << "<context>#{ctx.xml_escape}</context>\n" }
-      xml << "</contexts>\n"
+      ctxs = ci.add_element("contexts")
+      contexts.each {|ctx| 
+        c = ctxs.add_element("context") 
+        c.text = ctx
+      }
     end
 
     if marker
-      xml << "<marker>#{marker.xml_escape}</marker>\n"
+      el = ci.add_element("marker")
+      el.text = marker.to_s
     end
 
-    if raw_string
-      xml << "<raw_string>#{raw_string.xml_escape}</raw_string>\n"
-    end
-    xml << "</citation>\n"
-    xml
+    el = ci.add_element("raw_string")
+    el.text = raw_string
+
+    doc
   end
 
   def self.create_from_hash(hsh)
