@@ -27,6 +27,7 @@ class CitationsController < ApplicationController
     else
       cstrs = listify(params[:citation])
     end
+    cstrs.reject! {|str| str.strip.empty?}
 
     @citations = []
 
