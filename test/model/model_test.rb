@@ -43,7 +43,7 @@ class ModelTest
 
   def benchmark
     refs = []
-    f = File.open(TESTING_REFS, 'r')
+    f = File.open(TRAINING_REFS, 'r')
     while line = f.gets
       refs << line.strip
     end  
