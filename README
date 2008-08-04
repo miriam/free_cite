@@ -18,6 +18,8 @@ ldconfig
 
 == Configure Postgres ==
 
+sudo gem install ruby-postgres
+
 # as postgres
 
 initdb
