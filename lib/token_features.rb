@@ -53,7 +53,9 @@ module TokenFeatures
 
   def clear
     @possible_editor = nil
+    @possible_chapter = nil
     @dict_status = nil
+    @is_proceeding = nil
   end
 
   def last_char(toks, toksnp, tokslcnp, idx)
@@ -115,6 +117,35 @@ module TokenFeatures
         ((tokslcnp.join(" ") =~ /(ed|editor|editors|eds|edited)/) ? 
           "possibleEditors" : "noEditors")
     end
+  end
+
+  # if there is possible editor entry and "IN" preceeded by punctuation
+  # this citation may be a book chapter
+  def possible_chapter(toks, toksnp, tokslcnp, idx)
+    if @possible_chapter
+      @possible_chapter
+    else
+      @possible_chapter = 
+        (((possible_editor(toks, toksnp, tokslcnp, idx) and
+        (toks.join(" ") =~ /[\.,;]\s*in[:\s]/i)) or @is_proceeding) ?
+          "possibleChapter" : "noChapter")
+    end
+  end
+
+  def is_proceeding(toks, toksnp, tokslcnp, idx)
+    if @is_proceeding
+      @is_proceeding
+    else
+      @is_proceeding = 
+        (tokslcnp.any? {|t| 
+          %w( proc proceeding proceedings ).include?(t.strip)
+        } ? 'isProc' : 'noProc')
+    end
+  end
+
+  def in_book(toks, toksnp, tokslcnp, idx)
+    b = (idx > 0 and tokslcnp[idx] == 'in' and toks[idx-1].strip[-1,1] =~ /[\.;,]/)
+    b ? "inBook" : "notInBook"
   end
 
   #FIXME: this is broken in parsCit, but not broken here. May want to break it
