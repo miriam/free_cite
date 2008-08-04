@@ -65,7 +65,7 @@ class Citation < ActiveRecord::Base
       au = aus.add_element("author")
       au.text = a
     }
-    ci.add_attribute("valid", valid_citation?)
+    ci.add_attribute("valid", valid_citation?.to_s)
 
     %w(title journal booktitle editor volume publisher institution location 
        number pages year tech note ).each {|heading|
