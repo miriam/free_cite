@@ -16,6 +16,9 @@ su
 echo "/usr/local/lib" > /etc/ld.so.conf.d/default-i386.conf
 ldconfig
 
+sudo gem install -v=2.1 rails
+gem install ruby-postgres
+
 == Configure Postgres ==
 
 sudo gem install ruby-postgres
