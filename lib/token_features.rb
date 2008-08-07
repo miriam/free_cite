@@ -101,17 +101,16 @@ module TokenFeatures
   end
 
   def numbers(toks, toksnp, tokslcnp, idx)
-    (toks[idx]         =~ /\D*(19|20)[0-9][0-9]\D*/) ? "year"       :
-      (toks[idx]       =~ /^\d+\(\d+\)/)             ? "possibleVol"    :
-      (toks[idx]       =~ /[0-9]\-[0-9]/)            ? "possiblePage"   :
-      (toksnp[idx]     =~ /^(19|20)[0-9][0-9]$/)     ? "year"         :
-      (toks[idx]       =~ /\([0-9]+\)?/)             ? "possibleVol"  :
-      (toksnp[idx]     =~ /^[0-9]$/)                 ? "1dig"         :
-      (toksnp[idx]     =~ /^[0-9][0-9]$/)            ? "2dig"         :
-      (toksnp[idx]     =~ /^[0-9][0-9][0-9]$/)       ? "3dig"         :
-      (toksnp[idx]     =~ /^[0-9]+$/)                ? "4+dig"        :
-      (toksnp[idx]     =~ /^[0-9]+(th|st|nd|rd)$/)   ? "ordinal"      :
-      (toksnp[idx]     =~ /[0-9]/)                   ? "hasDig"       : "nonNum"
+    (toks[idx]           =~ /[0-9]\-[0-9]/)          ? "possiblePage" :
+      (toks[idx]         =~ /^\D*(19|20)[0-9][0-9]\D*$/)   ? "year"         :
+      (toks[idx]         =~ /[0-9]\([0-9]+\)/)       ? "possibleVol"  :
+      (toksnp[idx]       =~ /^(19|20)[0-9][0-9]$/)   ? "year"         :
+      (toksnp[idx]       =~ /^[0-9]$/)               ? "1dig"         :
+      (toksnp[idx]       =~ /^[0-9][0-9]$/)          ? "2dig"         :
+      (toksnp[idx]       =~ /^[0-9][0-9][0-9]$/)     ? "3dig"         :
+      (toksnp[idx]       =~ /^[0-9]+$/)              ? "4+dig"        :
+      (toksnp[idx]       =~ /^[0-9]+(th|st|nd|rd)$/) ? "ordinal"      :
+      (toksnp[idx]       =~ /[0-9]/)                 ? "hasDig"       : "nonNum"
   end
 
   def possible_editor(toks, toksnp, tokslcnp, idx)
