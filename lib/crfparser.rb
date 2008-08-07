@@ -91,18 +91,15 @@ class CRFParser
     tags
   end
 
-  def strip_punct(t)
-    toknp = t.gsub(/[^\w]/, '')
+  def strip_punct(str)
+    toknp = str.gsub(/[^\w]/, '')
     toknp = "EMPTY" if toknp.blank?
     toknp
   end
 
-  def downcase_stripped_token(t)
-    t == "EMPTY" ? "EMPTY" : t.downcase 
-  end
-
-  def prepare_token_data(cstr)
-    # split the string on whitespace 
+  def prepare_token_data(cstr, training=false)
+    cstr.strip!
+    # split the string on whitespace and calculate features on each token
     tokens_and_tags = cstr.split(/\s+/)
     tag = nil
     self.clear
@@ -114,17 +111,14 @@ class CRFParser
     tokensnp = tokens.map {|t| strip_punct(t) }
 
     # downcase stripped tokens
-    tokenslcnp = tokensnp.map {|t| downcase_stripped_token(t) }
-
+    tokenslcnp = tokensnp.map {|t| t == "EMPTY" ? "EMPTY" : t.downcase }
     return [tokens_and_tags, tokens, tokensnp, tokenslcnp]
   end
 
-  # calculate features on the citation string
+  # calculate features on the full citation string
   def str_2_features(cstr, training=false)
-    cstr.strip!
     features = []
-
-    (tokens_and_tags, tokens, tokensnp, tokenslcnp) = prepare_token_data(cstr)
+    tokens_and_tags, tokens, tokensnp, tokenslcnp = prepare_token_data(cstr, training)
     toki = 0
     tag = nil
     tokens_and_tags.each_with_index {|tok, i|
