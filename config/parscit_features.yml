@@ -1,6 +1,5 @@
-# This feature file contains the original features from parsCit, in their
-# original order
-# use this ordering to use the original parsCit model template
+# Specify feature print-order here, and refer to the associated numbers
+# when writing the template file
 feature_order:
  - 'last_char'        # 1
  - 'first_1_char'     # 2 
@@ -24,4 +23,5 @@ feature_order:
  - 'possible_editor'  # 20
  - 'location'         # 21
  - 'punct'            # 22
+ - 'is_in'            # 23
 

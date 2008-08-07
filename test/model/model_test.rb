@@ -97,11 +97,10 @@ class ModelTest
     k.times {|i|
       puts "Performing #{i+1}th iteration of #{k}-fold cross validation"
       # generate training refs
-      f = File.open(TRAINING_REFS, 'w')
-      f.close
+      `rm #{TRAINING_DATA}; touch #{TRAINING_DATA};`
       k.times {|j|
         next if j == i
-        `cat #{DIR}/#{REFS_PREFIX}#{j}.txt >> #{TRAINING_REFS}`
+        `cat #{DIR}/#{DATA_PREFIX}#{j}.txt >> #{TRAINING_DATA}`
       }
       puts "Training model"
       train
@@ -114,14 +113,17 @@ class ModelTest
   # testpct: percentage of tagged references to hold out for testing
   def generate_data(k=10)
     testpct = k/100.0
-    files = []
-    k.times {|i| files << File.open("#{DIR}/#{REFS_PREFIX}#{i}.txt", 'w') }
+    lines = []
+    k.times { lines << [] }
     f = File.open(TAGGED_REFERENCES, 'r')
-    while l = f.gets
-      files[((rand * k) % k).floor].write(l)
+    while line = f.gets
+      lines[((rand * k) % k).floor] << line.strip
     end
     f.close
-    files.each_with_index {|f, i| 
+
+    lines.each_with_index {|ll, i| 
+      f = File.open("#{DIR}/#{REFS_PREFIX}#{i}.txt", 'w') 
+      f.write(ll.join("\n"))
       f.flush
       f.close
       @crf.write_training_file("#{DIR}/#{REFS_PREFIX}#{i}.txt", 
@@ -130,7 +132,7 @@ class ModelTest
   end
   
   def train
-    @crf.train(TRAINING_REFS, TRAINING_DATA, MODEL_FILE, TEMPLATE_FILE)
+    @crf.train(TRAINING_REFS, MODEL_FILE, TEMPLATE_FILE, TRAINING_DATA)
   end
   
   def test

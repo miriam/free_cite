@@ -14,4 +14,3 @@ test/model/testing_data*txt
 test/model/training_refs*txt
 test/model/training_data*txt
 test/model/model
-test/model/output.txt

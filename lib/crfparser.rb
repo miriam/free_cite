@@ -91,34 +91,42 @@ class CRFParser
     tags
   end
 
-  def str_2_features(cstr, training=false)
-    cstr.strip!
-    features = []
+  def strip_punct(t)
+    toknp = t.gsub(/[^\w]/, '')
+    toknp = "EMPTY" if toknp.blank?
+    toknp
+  end
 
-    # calculate features on the full citation string
+  def downcase_stripped_token(t)
+    t == "EMPTY" ? "EMPTY" : t.downcase 
+  end
 
-    # split the string on whitespace and calculate features on each token
+  def prepare_token_data(cstr)
+    # split the string on whitespace 
     tokens_and_tags = cstr.split(/\s+/)
     tag = nil
     self.clear
 
-    if training
-      tokens = tokens_and_tags.reject {|t| t =~ /^<[\/]{0,1}([a-z]+)>$/}
-    else  
-      # if this is a testing run, disregard anything that looks like a tag
-      tokens = tokens_and_tags 
-    end
+    # strip out any tags
+    tokens = tokens_and_tags.reject {|t| t =~ /^<[\/]{0,1}([a-z]+)>$/}
 
     # strip tokens of punctuation
-    tokensnp = tokens.map {|t|
-      toknp = t.gsub(/[^\w]/, '')
-      toknp = "EMPTY" if toknp.blank?
-      toknp
-    }
-    # downcase stripped tokens
-    tokenslcnp = tokensnp.map {|t| t == "EMPTY" ? "EMPTY" : t.downcase }
+    tokensnp = tokens.map {|t| strip_punct(t) }
 
+    # downcase stripped tokens
+    tokenslcnp = tokensnp.map {|t| downcase_stripped_token(t) }
+
+    return [tokens_and_tags, tokens, tokensnp, tokenslcnp]
+  end
+
+  # calculate features on the citation string
+  def str_2_features(cstr, training=false)
+    cstr.strip!
+    features = []
+
+    (tokens_and_tags, tokens, tokensnp, tokenslcnp) = prepare_token_data(cstr)
     toki = 0
+    tag = nil
     tokens_and_tags.each_with_index {|tok, i|
       # if this is training data, grab the mark-up tag and then skip it
       if training
@@ -155,7 +163,9 @@ class CRFParser
 
     fin = File.open(tagged_refs, 'r')
     fout = File.open(training_data, 'w')
+    x = 0
     while l = fin.gets
+      puts "processed a line #{x+=1}"
       data = str_2_features(l.strip, true)
       data.each {|line| fout.write("#{line.join(" ")}\n") }
       fout.write("\n")
@@ -166,10 +176,13 @@ class CRFParser
     fout.close
   end
 
-  def train(tagged_refs=TAGGED_REFERENCES, training_data=TRAINING_DATA, 
-    model=MODEL_FILE, template=TEMPLATE_FILE)
+  def train(tagged_refs=TAGGED_REFERENCES, model=MODEL_FILE, 
+    template=TEMPLATE_FILE, training_data=nil)
 
-    write_training_file(tagged_refs, training_data)
+    if training_data.nil?
+      training_data = TRAINING_DATA
+      write_training_file(tagged_refs, training_data)
+    end  
     `crf_learn #{template} #{training_data} #{model}`
   end
 

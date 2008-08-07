@@ -1,5 +1,8 @@
 module TokenFeatures
 
+  QUOTES = Regexp.escape('"\'”’´‘“`')
+  SEPARATORS = Regexp.escape(".;,)")
+
   def TokenFeatures.read_dict_file(filename)
     dict = {}
     f = File.open(filename, 'r')
@@ -98,15 +101,17 @@ module TokenFeatures
   end
 
   def numbers(toks, toksnp, tokslcnp, idx)
-    (toksnp[idx]         =~ /^(19|20)[0-9][0-9]$/)   ? "year"         :
-      (toks[idx]   =~ /[0-9]\-[0-9]/)          ? "possiblePage" :
-      (toks[idx]   =~ /[0-9]\([0-9]+\)/)       ? "possibleVol"  :
-      (toksnp[idx]       =~ /^[0-9]$/)               ? "1dig"         :
-      (toksnp[idx]       =~ /^[0-9][0-9]$/)          ? "2dig"         :
-      (toksnp[idx]       =~ /^[0-9][0-9][0-9]$/)     ? "3dig"         :
-      (toksnp[idx]       =~ /^[0-9]+$/)              ? "4+dig"        :
-      (toksnp[idx]       =~ /^[0-9]+(th|st|nd|rd)$/) ? "ordinal"      :
-      (toksnp[idx]       =~ /[0-9]/)                 ? "hasDig"       : "nonNum"
+    (toks[idx]         =~ /\D*(19|20)[0-9][0-9]\D*/) ? "year"       :
+      (toks[idx]       =~ /^\d+\(\d+\)/)             ? "possibleVol"    :
+      (toks[idx]       =~ /[0-9]\-[0-9]/)            ? "possiblePage"   :
+      (toksnp[idx]     =~ /^(19|20)[0-9][0-9]$/)     ? "year"         :
+      (toks[idx]       =~ /\([0-9]+\)?/)             ? "possibleVol"  :
+      (toksnp[idx]     =~ /^[0-9]$/)                 ? "1dig"         :
+      (toksnp[idx]     =~ /^[0-9][0-9]$/)            ? "2dig"         :
+      (toksnp[idx]     =~ /^[0-9][0-9][0-9]$/)       ? "3dig"         :
+      (toksnp[idx]     =~ /^[0-9]+$/)                ? "4+dig"        :
+      (toksnp[idx]     =~ /^[0-9]+(th|st|nd|rd)$/)   ? "ordinal"      :
+      (toksnp[idx]     =~ /[0-9]/)                   ? "hasDig"       : "nonNum"
   end
 
   def possible_editor(toks, toksnp, tokslcnp, idx)
@@ -114,7 +119,7 @@ module TokenFeatures
       @possible_editor
     else
       @possible_editor = 
-        ((tokslcnp.join(" ") =~ /(ed|editor|editors|eds|edited)/) ? 
+        (tokslcnp.any? { |t|  %w(ed editor editors eds edited).include?(t)} ? 
           "possibleEditors" : "noEditors")
     end
   end
@@ -126,8 +131,8 @@ module TokenFeatures
       @possible_chapter
     else
       @possible_chapter = 
-        (((possible_editor(toks, toksnp, tokslcnp, idx) and
-        (toks.join(" ") =~ /[\.,;]\s*in[:\s]/i)) or @is_proceeding) ?
+        ((possible_editor(toks, toksnp, tokslcnp, idx) and
+        (toks.join(" ") =~ /[\.,;]\s*in[:\s]/i)) ?
           "possibleChapter" : "noChapter")
     end
   end
@@ -143,14 +148,26 @@ module TokenFeatures
     end
   end
 
-  def in_book(toks, toksnp, tokslcnp, idx)
-    b = (idx > 0 and tokslcnp[idx] == 'in' and toks[idx-1].strip[-1,1] =~ /[\.;,]/)
-    b ? "inBook" : "notInBook"
+  def is_in(toks, toksnp, tokslcnp, idx)
+    ((idx > 0) and 
+     (idx < (toks.length - 1)) and 
+     (toksnp[idx+1] =~ /^[A-Z]/) and
+     (tokslcnp[idx] == 'in') and
+     (toks[idx-1] =~ /[#{SEPARATORS}#{QUOTES}]/))? "inBook" : "notInBook"
   end
 
-  #FIXME: this is broken in parsCit, but not broken here. May want to break it
-  # and re-try
-  # In parseCit, the length of toks includes the tags
+  def is_et_al(toks, toksnp, tokslcnp, idx)
+    a = false
+    a = ((tokslcnp[idx-1] == 'et') and (tokslcnp[idx] == 'al')) if idx > 0
+    return a if a
+
+    if idx < toks.length - 1
+      a = ((tokslcnp[idx] == 'et') and (tokslcnp[idx+1] == 'al')) 
+    end
+
+    return (a ? "isEtAl" : "noEtAl")
+  end
+
   def location(toks, toksnp, tokslcnp, idx)
     r = ((idx.to_f / toks.length) * 10).round
   end  
@@ -167,31 +184,31 @@ module TokenFeatures
 
   def a_is_in_dict(toks, toksnp, tokslcnp, idx)
     ret = {}
-    @dict_status = DICT[tokslcnp[idx]] ? DICT[tokslcnp[idx]] : 0
+    @dict_status = (DICT[tokslcnp[idx]] ? DICT[tokslcnp[idx]] : 0)
   end  
 
   def publisherName(toks, toksnp, tokslcnp, idx)
-    @dict_status & DICT_FLAGS['publisherName'] > 0 ? 'publisherName' : 'no'
+    (@dict_status & DICT_FLAGS['publisherName']) > 0 ? 'publisherName' : 'noPublisherName'
   end
 
   def placeName(toks, toksnp, tokslcnp, idx)
-    @dict_status & DICT_FLAGS['placeName'] > 0 ? 'placeName' : 'no'
+    (@dict_status & DICT_FLAGS['placeName']) > 0 ? 'placeName' : 'noPlaceName'
   end
 
   def monthName(toks, toksnp, tokslcnp, idx)
-    @dict_status & DICT_FLAGS['monthName'] > 0 ? 'monthName' : 'no'
+    (@dict_status & DICT_FLAGS['monthName']) > 0 ? 'monthName' : 'noMonthName'
   end
 
   def lastName(toks, toksnp, tokslcnp, idx)
-    @dict_status & DICT_FLAGS['lastName'] > 0 ? 'lastName' : 'no'
+    (@dict_status & DICT_FLAGS['lastName']) > 0 ? 'lastName' : 'noLastName'
   end 
 
   def femaleName(toks, toksnp, tokslcnp, idx)
-    @dict_status & DICT_FLAGS['femaleName'] > 0 ? 'femaleName' : 'no'
+    (@dict_status & DICT_FLAGS['femaleName']) > 0 ? 'femaleName' : 'noFemaleName'
   end 
 
   def maleName(toks, toksnp, tokslcnp, idx)
-    @dict_status & DICT_FLAGS['maleName'] > 0 ? 'maleName' : 'no'
+    (@dict_status & DICT_FLAGS['maleName']) > 0 ? 'maleName' : 'noMaleName'
   end 
 
 end

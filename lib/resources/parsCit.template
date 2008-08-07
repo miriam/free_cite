@@ -1,3 +1,5 @@
+# See ../../config/parscit_features.yml for function-to-number correlation
+
 b# Unigram
 U00:%x[-3,0]
 U01:%x[-2,0]
@@ -36,7 +38,11 @@ U44:%x[2,10]
 U50:%x[0,11]
 
 # Numbers
-U60:%x[0,12]
+U60:%x[-1,12]
+U61:%x[0,12]
+U62:%x[1,12]
+U63:%x[-1,12]/%x[0,12]
+U63:%x[0,12]/%x[1,12]
 
 # Dict info
 U70:%x[0,13]
@@ -55,6 +61,10 @@ U90:%x[0,21]
 
 # Punctuation
 UA0:%x[0,22]
+
+# possible chapter?
+U90:%x[-1,22]/%x[0,23]/%x[0,20]
+U91:%x[-1,22]/%x[0,23]/%x[1,11]
 
 # Bigram
 B
