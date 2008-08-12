@@ -1,5 +1,5 @@
-set :application, "CiteParse"
-set :repository,  "git@github.com:publicdisplay/citeparse.git"
+set :application, "FreeCite"
+set :repository,  "git@github.com:miriam/free_cite.git"
 set :branch, "master"
 
 # If you aren't deploying to /u/apps/#{application} on the target
