@@ -12,7 +12,7 @@
 <p><b>Status code:</b> 201</p>
 
 <h3>Examples</h3>
-<h4> Using Ruby:<br>
+<h3> Using Ruby:</h3><br>
 <pre><span class="ident">require</span> <span class="punct">'</span><span class="string">net/http</span><span class="punct">'</span>
 
 <span class="constant">Net</span><span class="punct">::</span><span class="constant">HTTP</span><span class="punct">.</span><span class="ident">start</span><span class="punct">('</span><span class="string">localhost</span><span class="punct">',</span> <span class="number">3000</span><span class="punct">)</span> <span class="keyword">do</span> <span class="punct">|</span><span class="ident">http</span><span class="punct">|</span>
@@ -31,8 +31,8 @@
 </pre>
 
 
-<h4> Using <code>curl</code>:<br>
-<h5>Parsing a single citation:</h5>
+<h3> Using <code>curl</code>:<br>
+<h3>Parsing a single citation:</h3>
 <code>
 curl -H 'Accept: text/xml' -d "citation=Udvarhelyi, I.S., Gatsonis,
 C.A., Epstein, A.M., Pashos, C.L., Newhouse, J.P. and McNeil, B.J.
@@ -43,7 +43,7 @@ http://0.0.0.0:3000/citations/create
 </code>
 
 
-<h5>Parsing multiple citations:</h5>
+<h3>Parsing multiple citations:</h3>
 <code>
 curl -H 'Accept: text/xml' -d "citation[]=Fielderman, A., Silvester,
 G., Gatsonis, C.A., Hoenig, J., Flynn, S. Prognostic significance of
@@ -58,7 +58,7 @@ clinical outcomes. Journal of the American Medical Association, 1992;
 
 
 
-<h5>Example Return:</h5>
+<h3>Example Return:</h3>
 <pre>
 <span class="punct">&lt;</span><span class="tag">citations</span><span class="punct">&gt;</span>
   <span class="punct">&lt;</span><span class="tag">citation</span> <span class="attribute">valid</span><span class="punct">=</span><span class="attribute">true</span><span class="punct">&gt;</span>
