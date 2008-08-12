@@ -2,24 +2,24 @@
 <body>
   <h1>Welcome to CiteParse!</h1>
     <p>CiteParse classifies document citations into fielded data. You can use
-    it as a web <%= link_to "application", :controller => "citations", :action => "parse_string" %> 
+    it as a web <a href="#parse_string">application</a>
     or a <%= link_to "service", :contoller => "welcome", :action => "api_instructions" %>. You can also 
-    <a href="">download the source</a> and run CiteParse on your
+    <a href="http://github.com/miriam/free_cite/tree/master">download the source</a> and run CiteParse on your
     own server.</p>
     
-    <p>CiteParse is based on  the work of Min-Yen Kan, Isaac G. Councill, C. Lee Giles, 
-    and Yong Kiat Ng, and their application
-    <a href="http://aye.comp.nus.edu.sg/parsCit/">ParsCit</a>.</p>
+    <p>CiteParse was inspired by 
+    <a href="http://aye.comp.nus.edu.sg/parsCit/">ParsCit</a>. 
+    Much thanks to ParsCit's maintainer, Isaac Councill.</p>
     
     <p>CiteParse was developed through a partnership between the 
-    <a href="http://www.cs.umass.edu/~mccallum/data/cora-ie.tar.gz">Brown 
+    <a href=http://dl.lib.brown.edu/libweb/index.php">Brown 
     University Library</a> and Providence-based start-up 
     <a href="http://www.pubdisplay.com">Public Display</a>,
     with funding from the <a href="http://www.mellon.org/">Mellon Foundation</a>.</p>
     
     <p>CiteParse is implemented in <a href="http://www.rubyonrails.org/">Ruby on Rails</a> and
-    </a>uses the <a href="">CRF++ library</a> implementation of
-    conditional random fields. Our model is trained on the 
+    </a>uses the <a href="http://crfpp.sourceforge.net/">CRF++ library</a> 
+    implementation of conditional random fields. Our model is trained on the 
     <a href="http://www.cs.umass.edu/~mccallum/data/cora-ie.tar.gz">CORA dataset</a>.
     </p>
     
@@ -35,8 +35,9 @@
     <p><%= link_to "Please get in touch with us", :action => "feedback" %> if you have any feedback to share.
     </p>
 
+    <a name="parse_string"></a>
     <%= render :partial => "citations/parse_string" %>
-    
+
  <p><%= link_to "Learn about our API", :controller => "welcome", :action => "api_instructions" %></p>
 
 </body>
