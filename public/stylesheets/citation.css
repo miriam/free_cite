@@ -14,4 +14,10 @@
 .note        {background-color: #33FF99 !important;}
 .raw_string  {background-color: #CCCCCC !important;}
 
+tr { border-top-style: dashed; 
+     border-bottom-style: dashed;
+     border-left: none;
+     border-right: none;}
+tr { border: none }  
+table { border: none }
 
