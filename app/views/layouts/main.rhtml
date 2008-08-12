@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>CiteParse</title>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+  <%= @content_for_head %>
+</head>
+
+<body>
+
+<div id='wrapper'>
+  <!--content-->
+  <div id='main'>
+    <div id='content'>
+      <%= @content_for_layout %>
+    </div>
+  </div>
+  <!--/content-->
+</div>
+
+
+<%= render :partial => "layouts/footer" %>
+</body>
+</html>
+

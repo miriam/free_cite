@@ -1,4 +1,5 @@
 class WelcomeController < ApplicationController
+  layout "main"
 
   def api_instructions
   end

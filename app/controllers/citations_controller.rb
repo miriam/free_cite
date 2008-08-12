@@ -1,6 +1,8 @@
 require 'citation'
 
 class CitationsController < ApplicationController
+  layout "main"
+
   def index
     render :action => 'parse_string'
   end
