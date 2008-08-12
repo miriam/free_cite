@@ -1,0 +1,41 @@
+<%= javascript_include_tag 'prototype' %>
+<div id="feedback">
+  <div>
+    <h1>Feedback</h1>
+    <p>How's everything going?  We'd love to hear from you!</p>
+
+    <p>Specific problems, general inquiries, bug reports, praise, suggestions, critiques -- send 'em our way!</p>
+
+  </div>
+
+  <div>
+  <div>
+
+  <%= form_remote_tag :url => {:action => "feedback"}, :html => {:onsubmit => "$('feedback_submit').disabled = true"}, :complete => "$('feedback_submit').disabled = false" -%>
+
+    <div class="email">
+      <label for="email">Your Email Address:</label>
+      <input type="text" name="email" maxlength="50" value="" />
+    </div>
+
+    <div class="description">
+      <label for="description">Tell what's on your mind?</label><br>
+      <textarea wrap="virtual" rows="10" name="description" style="font-size:150%;"></textarea>
+    </div>
+
+    <div class="submit">
+      <input type="submit" value="Submit" id='feedback_submit' />
+    </div>
+
+  </form>
+  </div>
+  </div>
+  <div style="clear:both;"></div>
+</div>
+
+<div id="feedback_thanks" style="display:none; margin: 30px auto; width:500px;">
+    <h1>Thanks for your feedback!</h1>
+    <p>We appreciate the time you took to let us know what you're thinking.
+    We'll drop you a line once we've had a chance to think about what you wrote.  </p>
+  </div>
+</div>

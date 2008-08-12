@@ -1,0 +1,8 @@
+<div style="margin: 0px 30px;">
+  <h3><%= @p[:email] || "An anonymous user" %> has submitted the following feedback:</h3>
+
+  <div style="padding:20px; background-color:#ffc; font:14pt Georgia, Times New Roman;">
+    <%= simple_format(@p[:description]) %>
+  </div>
+
+</div>
