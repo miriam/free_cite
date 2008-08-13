@@ -1,7 +1,7 @@
 class Notifier < ActionMailer::Base
   
   def feedback(p)
-    recipients "citeparse.feedback@pubdisplay.com"
+    recipients "freecite.feedback@pubdisplay.com"
     from p[:email]
     subject "CiteParse User Feedback [#{Time.now.to_i}]"
     content_type "text/html"
