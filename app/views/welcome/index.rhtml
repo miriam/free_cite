@@ -1,29 +1,34 @@
-<html>
-<body>
-  <h1>Welcome to FreeCite!</h1>
-    <p>FreeCite is an open-source application that classifies document citations into fielded data. You can use
+<h1>About FreeCite</h1>
+<p>FreeCite is an open-source application that classifies document citations into fielded data. You can use
     it as a web <a href="#parse_string">application</a>
     or a <%= link_to "service", :controller => "welcome", :action => "api_instructions" %>. You can also 
     <a href="http://github.com/miriam/free_cite/tree/master">download the source</a> and run FreeCite on your
     own server. FreeCite is distributed under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT license</a>.</p>
     
-    <p>FreeCite was inspired by 
+<a name="parse_string"></a>
+<h2>Parse a Citation</h2>
+<%= render :partial => "citations/parse_string" %>
+
+<h2>Where did FreeCite come from?</h2>
+
+<p>FreeCite was inspired by 
     <a href="http://aye.comp.nus.edu.sg/parsCit/">ParsCit</a>. 
     Much thanks to ParsCit's maintainer, Isaac Councill.</p>
     
-    <p>FreeCite was developed through a partnership between the 
+<p>FreeCite was developed through a partnership between the 
     <a href="http://dl.lib.brown.edu/libweb/index.php">Brown 
     University Library</a> and Providence-based start-up 
     <a href="http://www.pubdisplay.com">Public Display</a>,
     with funding from the <a href="http://www.mellon.org/">Mellon Foundation</a>.</p>
     
-    <p>FreeCite is implemented in <a href="http://www.rubyonrails.org/">Ruby on Rails</a> and
+<p>FreeCite is implemented in <a href="http://www.rubyonrails.org/">Ruby on Rails</a> and
     </a>uses the <a href="http://crfpp.sourceforge.net/">CRF++ library</a> 
     implementation of conditional random fields. Our model is trained on the 
     <a href="http://www.cs.umass.edu/~mccallum/data/cora-ie.tar.gz">CORA dataset</a>.
     </p>
     
-    <p>If you're interested in a tool like FreeCite, you should check out these other 
+<h2>Other Citation Tools</h2>
+<p>If you're interested in a tool like FreeCite, you should check out these other 
     citation tools:
     <ul>
     <li><a href="http://paracite.eprints.org/">ParaCite</a></li>
@@ -32,13 +37,8 @@
     <%= link_to "Let us know", :action => "feedback" %> of any other tools you'd like to see listed here.
     </p>
     
-    <p><%= link_to "Please get in touch with us", :action => "feedback" %> if you have any feedback to share.
+<h2>Feedback Welcomed!</h2>
+<p><%= link_to "Please get in touch with us", :action => "feedback" %> if you have any feedback to share.
     </p>
 
-    <a name="parse_string"></a>
-    <%= render :partial => "citations/parse_string" %>
 
- <p><%= link_to "Learn about our API", :controller => "welcome", :action => "api_instructions" %></p>
-
-</body>
-</html>
