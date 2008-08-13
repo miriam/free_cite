@@ -1,30 +1,118 @@
-
 body {
-  background-color: #660000;
-  font: 14px arial;
+  margin:0;
+  padding:0;
+  background-color: #fff;
+  font-size:100%;
+  line-height:1.125em;
+  font-family:Verdana, sans-serif;
+  background-image:url('/images/background.gif');
+  background-position:top left;
+  background-repeat:repeat-x;
+}
+
+h1,h2,h3,h4,h5,h6 {
+  margin-top:0;
+  font-family:Times New Roman;
+  font-weight:none;
+  color:#3a1e1a;
+}
+
+a {
+  color: #990000;
+  text-decoration: none;
+}
+
+a:hover {
+  color:#990000;
+  text-decoration: underline;
 }
 
 #wrapper {
-  margin-top: 10px;
-  margin-right: auto;
-  margin-left: auto;
-  margin-bottom: 0px;
-  border: 0px;
-  width: 780px;
-  font-size: 100%;
-  min-height: 539px;
-  background-color:#66000;
-  background-repeat: repeat;
+  width:800px;
+  margin-left:auto;
+  margin-right:auto;
+  font-size: 0.8em;
 }
 
-div {
-  background-color: #FFFFFF;
-  padding: 12px;
+#header {
+  font-family:Times New Roman, Serif;
+  height:130px;
+}
+
+#header .university {
+  height:45px;
+}
+
+#header .university a.name {
+  float:right;
+  display:block;
+  color:#fff;
+  font-size:22px;
+  line-height:100%;
+  padding-top:5px;
+  padding-right:1em;
+}
+
+#header .university a.logo {
+  float:right;
+}
+
+#header .university img {
+  border:0;
+  margin:0;
+  padding:0;
+}
+
+#header h1 {
+  display:inline;
+  color:#fff;
+  font-size:35px;
+  font-weight:normal;
+  padding-right:0.5em;
+  line-height:100%;
+}
+
+#header span.slogan {
+  color:#fff;
+  font-size:18px;
+  text-transform:uppercase;
+  line-height:100%;
 }
 
 #content {
-  background-color: #E5EFF5;
-  padding: 12px;
+  width:600px;
+  float:right;
+  padding-bottom:2em;
+}
+
+#sidebar {
+  width:200px;
+  float:left;
+  padding-bottom:2em;
+}
+
+#sidebar ul,
+#sidebar ul li {
+  padding:0;
+  margin:0;
+  list-style:none;
+  list-style-type:none;
+}
+
+#sidebar ul {
+  border-top:1px solid #b4b4b4;
+  margin-right:2em;
+}
+
+#sidebar ul li a {
+  display:block;
+  padding:1em;
+  border-bottom:1px solid #b4b4b4;
+  text-decoration:none;
+}
+
+#sidebar ul li a:hover {
+  background-color:#f5f4f3;
 }
 
 #footer {
@@ -36,24 +124,4 @@ div {
       margin-left: auto;
 }
     
-.bodytextBOLD {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  font-weight: bold;
-}
-.bodytext {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 12px;
-}
-
-a {
-  color: #990000;
-  text-decoration: none;
-  font-weight: bold;
-}
-a:hover {
-  color:#990000;
-  text-decoration: underline;
-  font-weight: bold;
-}
 

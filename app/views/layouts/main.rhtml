@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <%= stylesheet_link_tag "main" %>
   <title>FreeCite</title>
+  <%= stylesheet_link_tag "main" %>
 
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
@@ -11,17 +11,32 @@
 <body>
 
 <div id='wrapper'>
-  <!--content-->
+
+<div id="header">
+    <div class="university">
+      <a href="http://www.brown.edu/" class="logo"><img src="/images/shield.gif" /></a>
+      <a href="http://www.brown.edu/" class="name">Brown University</a>
+    </div>
+    <h1>FreeCite</h1>
+    <span class="slogan">Citation Classifier</span>
+  </div>
+
   <div id='main'>
+    <!--content-->
     <div id='content'>
       <%= @content_for_layout %>
     </div>
+    <!--/content-->
+    <div id="sidebar">
+      <ul>
+        <li><%= link_to "Home", {:controller => 'welcome', :action => 'index'} -%></li>
+        <li><%= link_to "FreeCite API", {:controller => 'welcome', :action => 'api_instructions'} -%></li>
+        <li><%= link_to "Feedback", {:controller => 'welcome', :action => 'feedback'} -%></li>
+      </ul>
   </div>
-  <!--/content-->
+
 </div>
 
-
-<%= render :partial => "layouts/footer" %>
 </body>
 </html>
 
