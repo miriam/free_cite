@@ -1,15 +1,8 @@
 <%= javascript_include_tag 'prototype' %>
 <div id="feedback">
-  <div>
-    <h1>Feedback</h1>
-    <p>How's everything going?  We'd love to hear from you!</p>
-
-    <p>Specific problems, general inquiries, bug reports, praise, suggestions, critiques -- send 'em our way!</p>
-
-  </div>
-
-  <div>
-  <div>
+  <h1>Feedback</h1>
+  <p>How's everything going?  We'd love to hear from you!</p>
+  <p>Specific problems, general inquiries, bug reports, praise, suggestions, critiques -- send 'em our way!</p>
 
   <%= form_remote_tag :url => {:action => "feedback"}, :html => {:onsubmit => "$('feedback_submit').disabled = true"}, :complete => "$('feedback_submit').disabled = false" -%>
 
@@ -19,8 +12,8 @@
     </div>
 
     <div class="description">
-      <label for="description">Tell what's on your mind?</label><br>
-      <textarea wrap="virtual" rows="10" name="description" style="font-size:150%;"></textarea>
+      <label for="description">Tell what's on your mind?</label>
+      <textarea wrap="virtual" rows="10" name="description"></textarea>
     </div>
 
     <div class="submit">
@@ -28,9 +21,6 @@
     </div>
 
   </form>
-  </div>
-  </div>
-  <div style="clear:both;"></div>
 </div>
 
 <div id="feedback_thanks" style="display:none; margin: 30px auto; width:500px;">
