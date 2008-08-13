@@ -2,6 +2,13 @@ require 'citation'
 
 class CitationsController < ApplicationController
 
+  def set_rating
+    c = Citation.find(params[:id])
+    c.rating = params[:rating]
+    c.save!
+    render :nothing => true
+  end
+
   def index
     render :action => 'parse_string'
   end

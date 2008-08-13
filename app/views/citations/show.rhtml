@@ -1,3 +1,4 @@
+<%= javascript_include_tag 'prototype' %>
 <%= stylesheet_link_tag "citation" %>
 <table>
 <% @citations.each {|c| %>
@@ -10,30 +11,30 @@
 
   <td bgcolor="FF9999" class='choose_option'>
     <input id="unusable" 
-      name="citation_rating" 
+      name="citation_rating_<%=c.id-%>" 
       type="radio" 
       value="unusable" 
-      onclick="new Ajax.Request('/citation/set_rating/<%=c.id-%>', {parameters:{rating: this.value} }); return true;"
+      onclick="new Ajax.Request('/citations/set_rating/<%=c.id-%>', {parameters:{rating: this.value} }); return true;"
       <%= c.rating == 'unusable' ? "checked" : "" -%> />
     <label for='unusable'>unusable</label>
   </td>
 
   <td bgcolor="FFFFCC" class='choose_option'>
     <input id="usable" 
-      name="citation_rating" 
+      name="citation_rating_<%=c.id-%>" 
       type="radio" 
       value="usable" 
-      onclick="new Ajax.Request('/citation/set_rating/<%=c.id-%>', {parameters:{rating: this.value} }); return true;"
+      onclick="new Ajax.Request('/citations/set_rating/<%=c.id-%>', {parameters:{rating: this.value} }); return true;"
       <%= c.rating == 'usable' ? "checked" : "" -%> />
     <label for='usable'>good enough</label>
   </td>
 
   <td bgcolor="CCFFCC" class='choose_option'>
     <input id="perfect" 
-      name="citation_rating" 
+      name="citation_rating_<%=c.id-%>" 
       type="radio" 
       value="perfect" 
-    onclick="new Ajax.Request('/citation/set_rating/<%=c.id-%>', {parameters:{rating: this.value} }); return true;"
+    onclick="new Ajax.Request('/citations/set_rating/<%=c.id-%>', {parameters:{rating: this.value} }); return true;"
       <%= c.rating == 'perfect' ? "checked" : "" -%> />
     <label for='perfect'>perfect</label>
   </td>

@@ -36,6 +36,10 @@ class Citation < ActiveRecord::Base
   serialize :authors, Array
   serialize :contexts, Array
 
+  def rating=(r)
+    self[:rating] = r
+  end
+
   def valid_citation?
     return true if authors.empty? && year
     return true if (location || booktitle) && year
